@@ -30,13 +30,13 @@ void main()
 	while(1)
 	{
 		//LCD调试用代码
-		LCD_ShowString(1,1,"ReadNum");
-		LCD_ShowString(1,6,"UART_Num");
-		LCD_ShowString(2,1,"MaxNum:");
+		LCD_ShowString(1,1,"RNum:");
+		LCD_ShowString(1,9,"UNum:");
+		LCD_ShowString(2,1,"MNum:");
 		
-		LCD_ShowNum(1,3,ReadNum,2);
-		LCD_ShowNum(2,8,MaxNum,2);
-		LCD_ShowNum(1,8,UART_Num,2);
+		LCD_ShowNum(1,6,ReadNum,2);
+		LCD_ShowNum(2,6,MaxNum,2);
+		LCD_ShowNum(1,14,UART_Num,2);
 
 		//按下按键3是串口发送的数值存入eeprom里
 		KeyNum=Key();
