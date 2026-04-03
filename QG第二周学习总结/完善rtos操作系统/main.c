@@ -21,7 +21,7 @@ void main()
 	  task_id = 0;
 	  SP=task_sp[0];
 }
-
+//延时函数
 void Delay1000ms()		
 {
 	unsigned char i, j, k;
