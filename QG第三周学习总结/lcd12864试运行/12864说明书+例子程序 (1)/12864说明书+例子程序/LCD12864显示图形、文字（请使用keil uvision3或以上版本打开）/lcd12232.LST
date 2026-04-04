@@ -1,0 +1,262 @@
+C51 COMPILER V7.02a   LCD12232                                                             12/01/2008 21:57:58 PAGE 1   
+
+
+C51 COMPILER V7.02a, COMPILATION OF MODULE LCD12232
+OBJECT MODULE PLACED IN lcd12232.OBJ
+COMPILER INVOKED BY: E:\Program Files\Keil\C51\BIN\C51.EXE lcd12232.c BROWSE DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          #include <reg51.h>
+   2          #include <intrins.h>
+   3          //#include <at89x51.h>
+   4          
+   5          sbit LCD_RS=P1^0;//定义引脚
+   6          sbit LCD_RW=P1^1;
+   7          sbit LCD_E=P1^2;
+   8          #define LCD_Data P2
+   9          #define Busy    0x80 //用于检测LCD状态字中的Busy标识
+  10          
+  11          
+  12          
+  13          void WriteDataLCD(unsigned char WDLCD);
+  14          void WriteCommandLCD(unsigned char WCLCD,BuysC);
+  15          unsigned char ReadDataLCD(void);
+  16          unsigned char ReadStatusLCD(void);
+  17          void LCDInit(void);
+  18          void LCDClear(void);
+  19          void LCDFlash(void);
+  20          void DisplayOneChar(unsigned char X, unsigned char Y, unsigned char DData);
+  21          void DisplayListChar(unsigned char X, unsigned char Y, unsigned char code *DData);
+  22          void DisplayImage (unsigned char code *DData);
+  23          void Delay5Ms(void);
+  24          void Delay400Ms(void);
+  25          
+  26          
+  27          code unsigned char  uctech[] = {"51单片机学习网"};
+  28          code unsigned char  net[] = {"www.lydz8.com"};
+  29          code unsigned char tmp[]={//122*32点阵图形数据
+  30          0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xC0,
+  31          0x80,0x00,0x18,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x40,
+  32          0x80,0x00,0x8F,0x40,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x40,
+  33          0x80,0x03,0xFF,0xFF,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x40,
+  34          0x80,0x01,0xFF,0xF8,0x00,0x10,0x80,0x20,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x40,
+  35          0x80,0x01,0xFF,0xF0,0x80,0x10,0x83,0x24,0x02,0x01,0xFE,0x03,0xF0,0x00,0x00,0x40,
+  36          0x80,0x03,0xFF,0xF8,0x20,0x10,0x80,0x44,0x1F,0xE0,0x0C,0x3A,0x90,0x00,0x00,0x40,
+  37          0x80,0x03,0xFF,0xFC,0xE0,0x3F,0xF0,0x3B,0x12,0x20,0x30,0x2A,0x90,0x00,0x00,0x40,
+  38          0x80,0x0F,0xFF,0xFC,0x38,0x10,0xC2,0x08,0x12,0x20,0x20,0x2A,0x90,0x00,0x00,0x40,
+  39          0x80,0x0F,0xFC,0xAF,0x9E,0x1D,0xC1,0x7F,0x1F,0xE3,0xFF,0x2B,0xF0,0x00,0x00,0x40,
+  40          0x80,0x2F,0xF8,0x00,0x20,0x35,0xA0,0x08,0x12,0x20,0x20,0x2A,0x10,0x00,0x00,0x40,
+  41          0x80,0x03,0xF0,0x00,0x20,0x32,0x91,0x08,0x1F,0xE0,0x20,0x3A,0x00,0x38,0x00,0x40,
+  42          0x80,0x01,0xF0,0x01,0x00,0x16,0x91,0x7F,0x12,0x00,0x20,0x2A,0x00,0x30,0x00,0x40,
+  43          0x80,0x00,0x38,0x0C,0x00,0x10,0x82,0x08,0x02,0x10,0x20,0x02,0x10,0x20,0x00,0x40,
+  44          0x80,0x00,0x1F,0xE0,0x00,0x10,0x82,0x08,0x01,0xF0,0x60,0x01,0xF0,0x20,0x00,0x40,
+  45          0x80,0x00,0x3F,0xE0,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x18,0x00,0x40,
+  46          0x80,0x01,0xFB,0xF0,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x28,0x60,0x40,
+  47          0x80,0x03,0xFF,0xE8,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0xF8,0x40,
+  48          0x80,0x01,0xDF,0xE0,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x09,0xF8,0x40,
+  49          0x80,0x01,0xFF,0xB0,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x11,0xF8,0x40,
+  50          0x80,0x03,0xFD,0xFE,0x00,0x00,0x00,0x08,0x01,0x01,0x80,0x00,0x00,0x0D,0xF8,0x40,
+  51          0x80,0x05,0xF7,0xFF,0x80,0x00,0x00,0x08,0x01,0x02,0x40,0x00,0x00,0x27,0xF8,0x40,
+  52          0x80,0x07,0xFE,0xFE,0x83,0xDE,0xF0,0x09,0x27,0x3A,0x40,0x73,0x3E,0x61,0xF9,0x40,
+  53          0x80,0x07,0xEF,0x7B,0x03,0xDE,0xF0,0x08,0xC9,0x19,0x80,0x84,0xAA,0xE3,0xF9,0xC0,
+  54          0x80,0x0D,0xFF,0xBC,0x01,0x8C,0x60,0x08,0xC9,0x32,0x40,0x94,0xAA,0xE3,0xFC,0xC0,
+  55          0x80,0x06,0xBF,0xF8,0x01,0x8C,0x62,0x08,0xC7,0x3B,0xC8,0x63,0x2A,0xE7,0xFD,0x40,
+C51 COMPILER V7.02a   LCD12232                                                             12/01/2008 21:57:58 PAGE 2   
+
+  56          0x80,0xFF,0xFF,0xFD,0x00,0x00,0x00,0x01,0x80,0x00,0x00,0x00,0x00,0xC7,0xFE,0x40,
+  57          0xDF,0xFF,0x7E,0xFF,0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xC3,0xF8,0x40,
+  58          0xFF,0xF8,0xFF,0xFF,0xE0,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x41,0xE0,0x40,
+  59          0xFF,0xE1,0xFF,0xF7,0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0x40,
+  60          0x80,0x01,0xFF,0xFF,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x40,
+  61          0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xC0};
+  62          
+  63          void main(void)
+  64          {
+  65   1       Delay400Ms(); //启动等待，等LCD讲入工作状态
+  66   1       LCDInit(); //LCM初始化
+  67   1       Delay5Ms(); //延时片刻(可不要)
+  68   1       while(1){
+  69   2                      LCDClear();
+  70   2                      DisplayImage(tmp);//显示图形
+  71   2                      Delay400Ms();
+  72   2                      Delay400Ms();
+  73   2                      Delay400Ms();
+  74   2                      Delay400Ms();
+  75   2                      Delay400Ms();
+  76   2                      Delay400Ms();
+  77   2                      Delay400Ms();
+  78   2                      LCDClear();
+  79   2                      DisplayListChar(0, 0, uctech);  //显示字库中的中文数字
+  80   2                      DisplayListChar(0, 5, net);             //显示字库中的中文数字
+  81   2                      Delay400Ms();
+  82   2                      Delay400Ms();
+  83   2                      Delay400Ms();
+  84   2                      Delay400Ms();
+  85   2                      LCDFlash();     //闪烁效果
+  86   2                      //}
+  87   2              }
+  88   1      }
+  89          
+  90          //写数据
+  91          void WriteDataLCD(unsigned char WDLCD)
+  92          {
+  93   1       ReadStatusLCD(); //检测忙 
+  94   1       LCD_RS = 1;
+  95   1       LCD_RW = 0;
+  96   1       LCD_Data = WDLCD;
+  97   1       LCD_E = 1;
+  98   1       LCD_E = 1;
+  99   1       LCD_E = 1;
+ 100   1       LCD_E = 0;
+ 101   1      }
+ 102          
+ 103          //写指令
+ 104          void WriteCommandLCD(unsigned char WCLCD,BuysC) //BuysC为0时忽略忙检测
+ 105          {
+ 106   1       if (BuysC) ReadStatusLCD(); //根据需要检测忙 
+ 107   1       LCD_RS = 0;
+ 108   1       LCD_RW = 0; 
+ 109   1       LCD_Data = WCLCD;
+ 110   1       LCD_E = 1; 
+ 111   1       LCD_E = 1;
+ 112   1       LCD_E = 1;
+ 113   1       LCD_E = 0;  
+ 114   1      }
+ 115          
+ 116          //读数据
+ 117          unsigned char ReadDataLCD(void)
+C51 COMPILER V7.02a   LCD12232                                                             12/01/2008 21:57:58 PAGE 3   
+
+ 118          {
+ 119   1       LCD_RS = 1; 
+ 120   1       LCD_RW = 1;
+ 121   1       LCD_E = 0;
+ 122   1       LCD_E = 0;
+ 123   1       LCD_E = 1;
+ 124   1       return(LCD_Data);
+ 125   1      }
+ 126          
+ 127          //读状态
+ 128          unsigned char ReadStatusLCD(void)
+ 129          {
+ 130   1       LCD_Data = 0xFF; 
+ 131   1       LCD_RS = 0;
+ 132   1       LCD_RW = 1; 
+ 133   1       LCD_E = 1;
+ 134   1       while (LCD_Data & Busy); //检测忙信号
+ 135   1       LCD_E = 0;
+ 136   1       return(LCD_Data);
+ 137   1      }
+ 138          
+ 139          void LCDInit(void) //LCM初始化
+ 140          {
+ 141   1       WriteCommandLCD(0x30,1); //显示模式设置,开始要求每次检测忙信号
+ 142   1       WriteCommandLCD(0x01,1); //显示清屏
+ 143   1       WriteCommandLCD(0x06,1); // 显示光标移动设置
+ 144   1       WriteCommandLCD(0x0C,1); // 显示开及光标设置
+ 145   1      }
+ 146          void LCDClear(void) //清屏
+ 147          {
+ 148   1       WriteCommandLCD(0x01,1); //显示清屏
+ 149   1       WriteCommandLCD(0x34,1); // 显示光标移动设置
+ 150   1       WriteCommandLCD(0x30,1); // 显示开及光标设置
+ 151   1      }
+ 152          void LCDFlash(void)     //闪烁效果
+ 153          {
+ 154   1       WriteCommandLCD(0x08,1); //显示清屏
+ 155   1       Delay400Ms();
+ 156   1       WriteCommandLCD(0x0c,1); // 显示开及光标设置
+ 157   1       Delay400Ms();
+ 158   1       WriteCommandLCD(0x08,1); //显示清屏
+ 159   1       Delay400Ms();
+ 160   1       WriteCommandLCD(0x0c,1); // 显示开及光标设置
+ 161   1       Delay400Ms();
+ 162   1       WriteCommandLCD(0x08,1); //显示清屏
+ 163   1       Delay400Ms();
+ 164   1      }
+ 165          //按指定位置显示一个字符
+ 166          void DisplayOneChar(unsigned char X, unsigned char Y, unsigned char DData)
+ 167          {
+ 168   1       Y &= 0x1;
+ 169   1       X &= 0xF; //限制X不能大于15，Y不能大于1
+ 170   1       if (Y) X |= 0x10; //当要显示第二行时地址码+0x10;
+ 171   1       X |= 0x80; // 算出指令码
+ 172   1       WriteCommandLCD(X, 0); //这里不检测忙信号，发送地址码
+ 173   1       WriteDataLCD(DData);
+ 174   1      }
+ 175          
+ 176          //按指定位置显示一串字符
+ 177          void DisplayListChar(unsigned char X, unsigned char Y, unsigned char code *DData)
+ 178          {
+ 179   1       unsigned char ListLength,X2;
+C51 COMPILER V7.02a   LCD12232                                                             12/01/2008 21:57:58 PAGE 4   
+
+ 180   1        ListLength = 0;
+ 181   1        X2=X;
+ 182   1       Y &= 0x01;
+ 183   1       X &= 0x0F; //限制X不能大于15，Y不能大于1
+ 184   1       if (Y) X2 |= 0x10; //当要显示第二行时地址码+0x10;
+ 185   1       X2 |= 0x80; // 算出指令码
+ 186   1       WriteCommandLCD(X2, 1); //这里不检测忙信号，发送地址码
+ 187   1       while (DData[ListLength]>=0x20) //若到达字串尾则退出
+ 188   1        {
+ 189   2         if (X <= 0x0F) //X坐标应小于0xF
+ 190   2          {
+ 191   3           WriteDataLCD(DData[ListLength]); //
+ 192   3           ListLength++;
+ 193   3               X++;
+ 194   3               Delay5Ms();
+ 195   3          }
+ 196   2        }
+ 197   1      }
+ 198          
+ 199          //图形显示122*32
+ 200          void DisplayImage (unsigned char code *DData){
+ 201   1              unsigned char x,y;
+ 202   1              for(x=0;x<32;x++){                              //32行
+ 203   2                      WriteCommandLCD(0x34,1);
+ 204   2                      WriteCommandLCD((0x80+x),1);//列地址
+ 205   2                      WriteCommandLCD(0x80,1);        //行地址
+ 206   2                      WriteCommandLCD(0x30,1);
+ 207   2                      for(y=0;y<16;y++)                       
+ 208   2                              WriteDataLCD(DData[x*16+y]);//读取数据写入LCD           
+ 209   2              }
+ 210   1              WriteCommandLCD(0x36,1);        //扩充功能设定
+ 211   1              WriteCommandLCD(0x30,1);
+ 212   1      }
+ 213          
+ 214          //5ms延时
+ 215          void Delay5Ms(void)
+ 216          {
+ 217   1       unsigned int TempCyc = 5552;
+ 218   1       while(TempCyc--);
+ 219   1      }
+ 220          
+ 221          //400ms延时
+ 222          void Delay400Ms(void)
+ 223          {
+ 224   1       unsigned char TempCycA = 5;
+ 225   1       unsigned int TempCycB;
+ 226   1       while(TempCycA--)
+ 227   1       {
+ 228   2        TempCycB=7269;
+ 229   2        while(TempCycB--);
+ 230   2       };
+ 231   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    524    ----
+   CONSTANT SIZE    =    541    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      11
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+C51 COMPILER V7.02a   LCD12232                                                             12/01/2008 21:57:58 PAGE 5   
+
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

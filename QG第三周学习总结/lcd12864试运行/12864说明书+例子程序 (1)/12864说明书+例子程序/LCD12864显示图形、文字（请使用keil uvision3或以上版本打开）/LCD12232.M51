@@ -1,0 +1,342 @@
+BL51 BANKED LINKER/LOCATER V5.02                                                        12/01/2008  22:01:21  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V5.02, INVOKED BY:
+E:\PROGRAM FILES\KEIL\C51\BIN\BL51.EXE lcd12864.obj TO LCD12232 RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  lcd12864.obj (LCD12864)
+  E:\PROGRAM FILES\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  LCD12232 (LCD12864)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0005H     UNIT         _DATA_GROUP_
+            DATA    000DH     0001H     UNIT         ?DT?_DISPLAYONECHAR?LCD12864
+            IDATA   000EH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     021DH     UNIT         ?CO?LCD12864
+            CODE    0220H     0074H     UNIT         ?PR?_DISPLAYIMAGE?LCD12864
+            CODE    0294H     0051H     UNIT         ?PR?MAIN?LCD12864
+            CODE    02E5H     0046H     UNIT         ?PR?_DISPLAYLISTCHAR?LCD12864
+            CODE    032BH     002AH     UNIT         ?PR?LCDFLASH?LCD12864
+            CODE    0355H     0024H     UNIT         ?PR?LCDINIT?LCD12864
+            CODE    0379H     001FH     UNIT         ?PR?_WRITECOMMANDLCD?LCD12864
+            CODE    0398H     001CH     UNIT         ?PR?_DISPLAYONECHAR?LCD12864
+            CODE    03B4H     001BH     UNIT         ?PR?LCDCLEAR?LCD12864
+            CODE    03CFH     0019H     UNIT         ?PR?DELAY400MS?LCD12864
+            CODE    03E8H     0015H     UNIT         ?PR?_WRITEDATALCD?LCD12864
+            CODE    03FDH     0013H     UNIT         ?PR?READSTATUSLCD?LCD12864
+            CODE    0410H     000FH     UNIT         ?PR?DELAY5MS?LCD12864
+            CODE    041FH     000DH     UNIT         ?PR?READDATALCD?LCD12864
+            CODE    042CH     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   LCD12232 (LCD12864)
+
+
+SEGMENT                                 DATA_GROUP 
+  +--> CALLED SEGMENT                 START    LENGTH
+-----------------------------------------------------
+?C_C51STARTUP                         -----    -----
+  +--> ?PR?MAIN?LCD12864
+
+?PR?MAIN?LCD12864                     -----    -----
+  +--> ?PR?DELAY400MS?LCD12864
+  +--> ?PR?LCDINIT?LCD12864
+  +--> ?PR?DELAY5MS?LCD12864
+  +--> ?PR?LCDCLEAR?LCD12864
+BL51 BANKED LINKER/LOCATER V5.02                                                      12/01/2008  22:01:21  PAGE 2
+
+
+  +--> ?CO?LCD12864
+  +--> ?PR?_DISPLAYIMAGE?LCD12864
+  +--> ?PR?_DISPLAYLISTCHAR?LCD12864
+  +--> ?PR?LCDFLASH?LCD12864
+
+?PR?LCDINIT?LCD12864                  -----    -----
+  +--> ?PR?_WRITECOMMANDLCD?LCD12864
+
+?PR?_WRITECOMMANDLCD?LCD12864         000CH    0001H
+  +--> ?PR?READSTATUSLCD?LCD12864
+
+?PR?LCDCLEAR?LCD12864                 -----    -----
+  +--> ?PR?_WRITECOMMANDLCD?LCD12864
+
+?PR?_DISPLAYIMAGE?LCD12864            0008H    0004H
+  +--> ?PR?_WRITECOMMANDLCD?LCD12864
+  +--> ?PR?_WRITEDATALCD?LCD12864
+
+?PR?_WRITEDATALCD?LCD12864            000CH    0001H
+  +--> ?PR?READSTATUSLCD?LCD12864
+
+?PR?_DISPLAYLISTCHAR?LCD12864         0008H    0004H
+  +--> ?PR?_WRITECOMMANDLCD?LCD12864
+  +--> ?PR?_WRITEDATALCD?LCD12864
+  +--> ?PR?DELAY5MS?LCD12864
+
+?PR?LCDFLASH?LCD12864                 -----    -----
+  +--> ?PR?_WRITECOMMANDLCD?LCD12864
+  +--> ?PR?DELAY400MS?LCD12864
+
+
+
+SYMBOL TABLE OF MODULE:  LCD12232 (LCD12864)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        LCD12864
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  C:0003H         PUBLIC        uctech
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  C:037FH         PUBLIC        _WriteCommandLCD
+  C:0220H         PUBLIC        _DisplayImage
+  C:0294H         PUBLIC        main
+  C:03B4H         PUBLIC        LCDClear
+  C:03E8H         PUBLIC        _WriteDataLCD
+  C:032BH         PUBLIC        LCDFlash
+  C:0012H         PUBLIC        net
+  C:03CFH         PUBLIC        Delay400Ms
+  C:041FH         PUBLIC        ReadDataLCD
+  C:0020H         PUBLIC        tmp
+  B:0090H.0       PUBLIC        LCD_RS
+  C:02E5H         PUBLIC        _DisplayListChar
+  C:03FDH         PUBLIC        ReadStatusLCD
+  B:0090H.1       PUBLIC        LCD_RW
+  C:0398H         PUBLIC        _DisplayOneChar
+BL51 BANKED LINKER/LOCATER V5.02                                                      12/01/2008  22:01:21  PAGE 3
+
+
+  C:0410H         PUBLIC        Delay5Ms
+  C:0355H         PUBLIC        LCDInit
+  B:0090H.2       PUBLIC        LCD_E
+  -------         PROC          MAIN
+  C:0294H         LINE#         63
+  C:0294H         LINE#         64
+  C:0294H         LINE#         65
+  C:0297H         LINE#         66
+  C:029AH         LINE#         67
+  C:029DH         LINE#         68
+  C:029DH         LINE#         69
+  C:02A0H         LINE#         70
+  C:02A7H         LINE#         71
+  C:02AAH         LINE#         72
+  C:02ADH         LINE#         73
+  C:02B0H         LINE#         74
+  C:02B3H         LINE#         75
+  C:02B6H         LINE#         76
+  C:02B9H         LINE#         77
+  C:02BCH         LINE#         78
+  C:02BFH         LINE#         79
+  C:02C9H         LINE#         80
+  C:02D4H         LINE#         81
+  C:02D7H         LINE#         82
+  C:02DAH         LINE#         83
+  C:02DDH         LINE#         84
+  C:02E0H         LINE#         85
+  C:02E3H         LINE#         87
+  -------         ENDPROC       MAIN
+  -------         PROC          _WRITEDATALCD
+  D:000CH         SYMBOL        WDLCD
+  C:03E8H         LINE#         91
+  C:03EAH         LINE#         92
+  C:03EAH         LINE#         93
+  C:03EDH         LINE#         94
+  C:03EFH         LINE#         95
+  C:03F1H         LINE#         96
+  C:03F4H         LINE#         97
+  C:03F6H         LINE#         98
+  C:03F8H         LINE#         99
+  C:03FAH         LINE#         100
+  C:03FCH         LINE#         101
+  -------         ENDPROC       _WRITEDATALCD
+  C:0379H         SYMBOL        L?0039
+  -------         PROC          L?0038
+  -------         ENDPROC       L?0038
+  C:0379H         SYMBOL        L?0039
+  -------         PROC          _WRITECOMMANDLCD
+  D:000CH         SYMBOL        WCLCD
+  D:0004H         SYMBOL        BuysC
+  C:037FH         LINE#         104
+  C:0381H         LINE#         105
+  C:0381H         LINE#         106
+  C:0388H         LINE#         107
+  C:038AH         LINE#         108
+  C:038CH         LINE#         109
+  C:038FH         LINE#         110
+BL51 BANKED LINKER/LOCATER V5.02                                                      12/01/2008  22:01:21  PAGE 4
+
+
+  C:0391H         LINE#         111
+  C:0393H         LINE#         112
+  C:0395H         LINE#         113
+  C:0397H         LINE#         114
+  -------         ENDPROC       _WRITECOMMANDLCD
+  -------         PROC          READDATALCD
+  C:041FH         LINE#         117
+  C:041FH         LINE#         118
+  C:041FH         LINE#         119
+  C:0421H         LINE#         120
+  C:0423H         LINE#         121
+  C:0425H         LINE#         122
+  C:0427H         LINE#         123
+  C:0429H         LINE#         124
+  C:042BH         LINE#         125
+  -------         ENDPROC       READDATALCD
+  -------         PROC          READSTATUSLCD
+  C:03FDH         LINE#         128
+  C:03FDH         LINE#         129
+  C:03FDH         LINE#         130
+  C:0400H         LINE#         131
+  C:0402H         LINE#         132
+  C:0404H         LINE#         133
+  C:0406H         LINE#         134
+  C:040BH         LINE#         135
+  C:040DH         LINE#         136
+  C:040FH         LINE#         137
+  -------         ENDPROC       READSTATUSLCD
+  -------         PROC          LCDINIT
+  C:0355H         LINE#         139
+  C:0355H         LINE#         140
+  C:0355H         LINE#         141
+  C:035EH         LINE#         142
+  C:0367H         LINE#         143
+  C:0370H         LINE#         144
+  -------         ENDPROC       LCDINIT
+  -------         PROC          LCDCLEAR
+  C:03B4H         LINE#         146
+  C:03B4H         LINE#         147
+  C:03B4H         LINE#         148
+  C:03BDH         LINE#         149
+  C:03C6H         LINE#         150
+  -------         ENDPROC       LCDCLEAR
+  -------         PROC          LCDFLASH
+  C:032BH         LINE#         152
+  C:032BH         LINE#         153
+  C:032BH         LINE#         154
+  C:032EH         LINE#         155
+  C:0331H         LINE#         156
+  C:033AH         LINE#         157
+  C:033DH         LINE#         158
+  C:0340H         LINE#         159
+  C:0343H         LINE#         160
+  C:034CH         LINE#         161
+  C:034FH         LINE#         162
+  C:0352H         LINE#         163
+  -------         ENDPROC       LCDFLASH
+BL51 BANKED LINKER/LOCATER V5.02                                                      12/01/2008  22:01:21  PAGE 5
+
+
+  -------         PROC          _DISPLAYONECHAR
+  D:0007H         SYMBOL        X
+  D:0005H         SYMBOL        Y
+  D:000DH         SYMBOL        DData
+  C:0398H         LINE#         166
+  C:039AH         LINE#         167
+  C:039AH         LINE#         168
+  C:039DH         LINE#         169
+  C:03A0H         LINE#         170
+  C:03A6H         LINE#         171
+  C:03A9H         LINE#         172
+  C:03AFH         LINE#         173
+  -------         ENDPROC       _DISPLAYONECHAR
+  -------         PROC          _DISPLAYLISTCHAR
+  D:0008H         SYMBOL        X
+  D:0005H         SYMBOL        Y
+  D:0009H         SYMBOL        DData
+  -------         DO            
+  D:000BH         SYMBOL        ListLength
+  D:0007H         SYMBOL        X2
+  -------         ENDDO         
+  C:02E5H         LINE#         177
+  C:02EBH         LINE#         178
+  C:02EBH         LINE#         180
+  C:02EEH         LINE#         181
+  C:02EEH         LINE#         182
+  C:02F1H         LINE#         183
+  C:02F4H         LINE#         184
+  C:02FAH         LINE#         185
+  C:02FDH         LINE#         186
+  C:0304H         LINE#         187
+  C:0317H         LINE#         188
+  C:0317H         LINE#         189
+  C:031EH         LINE#         190
+  C:031EH         LINE#         191
+  C:0321H         LINE#         192
+  C:0323H         LINE#         193
+  C:0325H         LINE#         194
+  C:0328H         LINE#         195
+  C:0328H         LINE#         196
+  C:032AH         LINE#         197
+  -------         ENDPROC       _DISPLAYLISTCHAR
+  -------         PROC          _DISPLAYIMAGE
+  D:0008H         SYMBOL        DData
+  -------         DO            
+  D:000AH         SYMBOL        x
+  D:000BH         SYMBOL        y
+  -------         ENDDO         
+  C:0220H         LINE#         200
+  C:0224H         LINE#         202
+  C:0227H         LINE#         203
+  C:0230H         LINE#         204
+  C:023CH         LINE#         205
+  C:0245H         LINE#         206
+  C:024EH         LINE#         207
+  C:0251H         LINE#         208
+  C:0279H         LINE#         209
+BL51 BANKED LINKER/LOCATER V5.02                                                      12/01/2008  22:01:21  PAGE 6
+
+
+  C:0282H         LINE#         210
+  C:028BH         LINE#         211
+  -------         ENDPROC       _DISPLAYIMAGE
+  -------         PROC          DELAY5MS
+  -------         DO            
+  D:0006H         SYMBOL        TempCyc
+  -------         ENDDO         
+  C:0410H         LINE#         215
+  C:0410H         LINE#         216
+  C:0410H         LINE#         217
+  C:0414H         LINE#         218
+  C:041EH         LINE#         219
+  -------         ENDPROC       DELAY5MS
+  -------         PROC          DELAY400MS
+  -------         DO            
+  D:0005H         SYMBOL        TempCycA
+  D:0006H         SYMBOL        TempCycB
+  -------         ENDDO         
+  C:03CFH         LINE#         222
+  C:03CFH         LINE#         223
+  C:03CFH         LINE#         224
+  C:03D1H         LINE#         226
+  C:03D7H         LINE#         227
+  C:03D7H         LINE#         228
+  C:03DBH         LINE#         229
+  C:03E7H         LINE#         230
+  C:03E7H         LINE#         231
+  -------         ENDPROC       DELAY400MS
+  -------         ENDMOD        LCD12864
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?READDATALCD?LCD12864
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_DISPLAYONECHAR?LCD12864
+
+Program Size: data=15.0 xdata=0 code=1080
+LINK/LOCATE RUN COMPLETE.  2 WARNING(S),  0 ERROR(S)
