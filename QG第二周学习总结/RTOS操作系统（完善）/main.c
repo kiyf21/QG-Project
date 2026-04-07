@@ -84,7 +84,7 @@ void task1(void)
     P2_7 = 0;
     while(1)
     {
-        Delay(1000);
+        Delay(500);
         P2_7 = ~P2_7;
 		task_switch();
     }

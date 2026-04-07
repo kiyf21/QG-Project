@@ -1,3 +1,0 @@
-"lcd12864.obj" 
-TO "LCD12232" 
-RAMSIZE(256) 

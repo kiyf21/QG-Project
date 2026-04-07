@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  04/05/2026 01:36:23 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  04/07/2026 20:15:06 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   52   1          unsigned char next_id;
   53   1          task_sp[task_id] = SP;
   54   1      
-C51 COMPILER V9.54   MAIN                                                                  04/05/2026 01:36:23 PAGE 2   
+C51 COMPILER V9.54   MAIN                                                                  04/07/2026 20:15:06 PAGE 2   
 
   55   1          // 寻找下一个就绪的任务
   56   1          next_id = task_id + 1;
@@ -87,7 +87,7 @@ line level    source
   75   2              Delay(1000);
   76   2              P2_0 = ~P2_0;
   77   2              task_switch();
-  78   2              //task_suspend(0); 
+  78   2              task_suspend(0); 
   79   2          }
   80   1      }
   81          
@@ -96,7 +96,7 @@ line level    source
   84   1          P2_7 = 0;
   85   1          while(1)
   86   1          {
-  87   2              Delay(1000);
+  87   2              Delay(500);
   88   2              P2_7 = ~P2_7;
   89   2                      task_switch();
   90   2          }
@@ -112,7 +112,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    169    ----
+   CODE SIZE        =    174    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
