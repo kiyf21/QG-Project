@@ -1,0 +1,24 @@
+C51 COMPILER V9.54   MENU2                                                                 04/10/2026 09:26:12 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MENU2
+OBJECT MODULE PLACED IN .\Objects\menu2.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE menu2.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\men
+                    -u2.lst) OBJECT(.\Objects\menu2.obj)
+
+line level    source
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

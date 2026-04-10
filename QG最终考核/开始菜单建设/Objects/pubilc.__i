@@ -1,0 +1,1 @@
+"pubilc.c" OPTIMIZE (8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\pubilc.lst) OBJECT(.\Objects\pubilc.obj)

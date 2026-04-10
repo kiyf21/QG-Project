@@ -79,9 +79,9 @@ void DisplayImage (unsigned char code *DData)
 {
 	unsigned char x,y,i;
 	unsigned int tmp=0;
-	
+
 	lcd12864_write_cmd(0x34,1);  // 关闭绘图显示，进入指令模式
-    lcd12864_write_cmd(0x36,1);  // 打开绘图模式
+    lcd12864_write_cmd(0x36,1);  // 打开绘图模式	
 	
 	for(i=0;i<9;){		//分两屏，上半屏和下半屏，因为起始地址不同，需要分开
 	for(x=0;x<32;x++)

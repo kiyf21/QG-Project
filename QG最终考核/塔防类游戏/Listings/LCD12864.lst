@@ -1,0 +1,500 @@
+C51 COMPILER V9.54   LCD12864                                                              04/09/2026 00:35:59 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE LCD12864
+OBJECT MODULE PLACED IN .\Objects\LCD12864.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE LCD12864.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\
+                    -LCD12864.lst) OBJECT(.\Objects\LCD12864.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          #include "Delay.h"
+   3          
+   4          //管脚定义
+   5          sbit LCD12864_RS  = P2^6;//数据命令选择
+   6          sbit LCD12864_WR  = P2^5;//读写选择
+   7          sbit LCD12864_E   = P2^7;//使能信号
+   8          sbit LCD12864_PSB = P3^2;//8位或4并口/串口选择
+   9          
+  10          #define LCD12864_DATAPORT       P0      //LCD12864数据端口定义
+  11          #define Busy               0x80 //用于检测LCD状态字中的Busy标识
+  12          
+  13          void LCD12864_Write_Cmd(unsigned char cmd,BuysC);
+  14          void LCD12864_Write_Data(unsigned char dat);
+  15          unsigned char LCD12864_Check_Status(void);
+  16          void LCD12864_Init(void);
+  17          void LCD12864_Clear(void);
+  18          void LCD_Flash(void);
+  19          void LCD12864_Show_String(unsigned char x,unsigned char y,unsigned char *str);
+  20          void LCD12864_Show_Onechar(unsigned char x, unsigned char y, unsigned char DData);
+  21          void LCD12864_Show_Image (unsigned char code *DData);
+  22          void LCD12864_Show_ImageTry (unsigned char code *DData);
+  23          
+  24          
+  25          
+  26          //写指令
+  27          void LCD12864_Write_Cmd(unsigned char cmd,BuysC)
+  28          {
+  29   1              if (BuysC) LCD12864_Check_Status(); //根据需要检测忙 
+  30   1              LCD12864_RS=0;//选择命令
+  31   1              LCD12864_WR=0;//选择写
+  32   1              LCD12864_DATAPORT=cmd;//准备命令
+  33   1              Delay_10us(1);
+  34   1              LCD12864_E=1;
+  35   1              LCD12864_E=1;
+  36   1              LCD12864_E=1;//使能脚E先上升沿写入
+  37   1              LCD12864_E=0;//使能脚E后负跳变完成写入
+  38   1      }
+  39          
+  40          //写数据
+  41          void LCD12864_Write_Data(unsigned char dat)
+  42          {
+  43   1              LCD12864_Check_Status(); //检测忙
+  44   1              LCD12864_RS=1;//选择数据
+  45   1              LCD12864_WR=0;//选择写
+  46   1              LCD12864_DATAPORT=dat;//准备数据
+  47   1              Delay_10us(1);
+  48   1              LCD12864_E=1;
+  49   1              LCD12864_E=1;
+  50   1              LCD12864_E=1;//使能脚E先上升沿写入
+  51   1              LCD12864_E=0;//使能脚E后负跳变完成写入
+  52   1      }
+  53          
+  54          //读状态
+C51 COMPILER V9.54   LCD12864                                                              04/09/2026 00:35:59 PAGE 2   
+
+  55          unsigned char LCD12864_Check_Status(void)
+  56          {
+  57   1               LCD12864_DATAPORT = 0xFF; 
+  58   1               LCD12864_RS = 0;
+  59   1               LCD12864_WR = 1; 
+  60   1               LCD12864_E = 1;
+  61   1               while (LCD12864_DATAPORT & Busy); //检测忙信号
+  62   1               LCD12864_E = 0;
+  63   1               return(LCD12864_DATAPORT);
+  64   1      }
+  65          
+  66          //LCD初始化
+  67          void LCD12864_Init(void)
+  68          {
+  69   1              //LCD12864_PSB=1;//选择8位或4位并口方式
+  70   1              LCD12864_Write_Cmd(0x30,1);//数据总线8位，基本指令操作
+  71   1              LCD12864_Write_Cmd(0x01,1);
+  72   1              LCD12864_Write_Cmd(0x06,1);//写入新数据后光标右移，显示屏不移动
+  73   1              LCD12864_Write_Cmd(0x0c,1);
+  74   1      }
+  75          //LCD清屏
+  76          void LCD12864_Clear(void)
+  77          {
+  78   1              LCD12864_Write_Cmd(0x01,1);     
+  79   1              LCD12864_Write_Cmd(0x34,1);     
+  80   1              LCD12864_Write_Cmd(0x30,1);     
+  81   1      } 
+  82          
+  83          
+  84          //LCD闪烁
+  85          void LCD_Flash(void)    //闪烁效果
+  86          {
+  87   1               LCD12864_Write_Cmd(0x08,1); //显示清屏
+  88   1               Delay_ms(400);
+  89   1               LCD12864_Write_Cmd(0x0c,1); // 显示开及光标设置
+  90   1               Delay_ms(400);
+  91   1               LCD12864_Write_Cmd(0x08,1); //显示清屏
+  92   1               Delay_ms(400);
+  93   1               LCD12864_Write_Cmd(0x0c,1); // 显示开及光标设置
+  94   1               Delay_ms(400);
+  95   1               LCD12864_Write_Cmd(0x08,1); //显示清屏
+  96   1               Delay_ms(400);
+  97   1      }
+  98          
+  99          //第一种
+ 100          //lcd12864_clear();
+ 101          //lcd12864_show_string(0,0,"Hello World!");//第1行字符串显示
+ 102          //delay_ms(400);
+ 103          //delay_ms(400);
+ 104          //第二种
+ 105          //unsigned char  uctech[] = {"大雄电子营业部"};
+ 106          //lcd12864_clear();
+ 107          //lcd12864_show_string(0,0,uctech);     //显示字库中的中文数字
+ 108          //delay_ms(400);
+ 109          //delay_ms(400);
+ 110          void LCD12864_Show_String(unsigned char x,unsigned char y,unsigned char *str)
+ 111          {
+ 112   1              if(y<=0)y=0;
+ 113   1              if(y>3)y=3;
+ 114   1              x&=0x0f;        //限制x,y不能大于显示范围
+ 115   1      
+ 116   1              switch(y)
+C51 COMPILER V9.54   LCD12864                                                              04/09/2026 00:35:59 PAGE 3   
+
+ 117   1              {
+ 118   2                      case 0: x|=0x80;break;//第1行地址+x的偏移
+ 119   2                      case 1: x|=0x90;break;//第2行地址+x的偏移
+ 120   2                      case 2: x|=0x88;break;//第3行地址+x的偏移
+ 121   2                      case 3: x|=0x98;break;//第4行地址+x的偏移
+ 122   2              }
+ 123   1              LCD12864_Write_Cmd(x,1);
+ 124   1              while(*str!='\0')
+ 125   1              {
+ 126   2                      LCD12864_Write_Data(*str);
+ 127   2                      str++;          
+ 128   2              }       
+ 129   1      } 
+ 130          
+ 131          //lcd12864_clear();
+ 132          //lcd12864_show_onechar(0,0,0x41);
+ 133          //delay_ms(400);
+ 134          //delay_ms(400);
+ 135          //按指定位置显示一个字符
+ 136          void LCD12864_Show_Onechar(unsigned char x, unsigned char y, unsigned char DData)
+ 137          {
+ 138   1              if(y<=0)y=0;
+ 139   1              if(y>3)y=3;
+ 140   1              x&=0x0f;        //限制x,y不能大于显示范围
+ 141   1      
+ 142   1              switch(y)
+ 143   1              {
+ 144   2                      case 0: x|=0x80;break;//第1行地址+x的偏移
+ 145   2                      case 1: x|=0x90;break;//第2行地址+x的偏移
+ 146   2                      case 2: x|=0x88;break;//第3行地址+x的偏移
+ 147   2                      case 3: x|=0x98;break;//第4行地址+x的偏移
+ 148   2              }
+ 149   1              LCD12864_Write_Cmd(x,0); //这里不检测忙信号，发送地址码
+ 150   1              LCD12864_Write_Data(DData);
+ 151   1      }
+ 152          
+ 153          //图形显示128*64
+ 154          void LCD12864_Show_Image (unsigned char code *DData)
+ 155          {
+ 156   1              unsigned char x,y,i;
+ 157   1              unsigned int tmp=0;
+ 158   1              
+ 159   1              LCD12864_Write_Cmd(0x34,1);  // 关闭绘图显示，进入指令模式
+ 160   1          LCD12864_Write_Cmd(0x36,1);  // 打开绘图模式
+ 161   1              
+ 162   1              for(i=0;i<9;){          //分两屏，上半屏和下半屏，因为起始地址不同，需要分开
+ 163   2                      for(x=0;x<32;x++){                              //32行
+ 164   3                              LCD12864_Write_Cmd((0x80+x),1);//列地址
+ 165   3                              LCD12864_Write_Cmd((0x80+i),1); //行地址，下半屏，即第三行地址0X88      
+ 166   3                              for(y=0;y<16;y++)
+ 167   3                              {
+ 168   4                                      LCD12864_Write_Data(DData[tmp+y]);//读取数据写入LCD
+ 169   4                              }
+ 170   3                              tmp+=16;                
+ 171   3                      }
+ 172   2                      i+=8;
+ 173   2              }
+ 174   1              LCD12864_Write_Cmd(0x36,1);     //扩充功能设定
+ 175   1              LCD12864_Write_Cmd(0x30,1);
+ 176   1      }
+ 177          
+ 178          
+C51 COMPILER V9.54   LCD12864                                                              04/09/2026 00:35:59 PAGE 4   
+
+ 179          
+ 180          //图形显示128*64
+ 181          void LCD12864_Show_ImageTry2 (unsigned char code *DData)
+ 182          {
+ 183   1              unsigned char x,y,i;
+ 184   1              unsigned int tmp=0;
+ 185   1              
+ 186   1              LCD12864_Write_Cmd(0x34,1);  // 关闭绘图显示，进入指令模式
+ 187   1          LCD12864_Write_Cmd(0x36,1);  // 打开绘图模式
+ 188   1              
+ 189   1              for(i=0;i<9;)//分两屏，上半屏和下半屏，因为起始地址不同，需要分开
+ 190   1              {               
+ 191   2                      if(i==0)
+ 192   2                      {
+ 193   3                              for(x=30;x<32;x++)//32行
+ 194   3                              {                               
+ 195   4                                      LCD12864_Write_Cmd((0x80+x),1);//列地址
+ 196   4                                      LCD12864_Write_Cmd((0x80+i),1); //行地址，下半屏，即第三行地址0X88      
+ 197   4                                      for(y=0;y<2;y++)
+ 198   4                                      {
+ 199   5                                              LCD12864_Write_Data(DData[tmp+y]);//读取数据写入LCD
+ 200   5                                      }
+ 201   4                                      tmp+=2;         
+ 202   4                              }
+ 203   3                      }
+ 204   2                      else
+ 205   2                      {
+ 206   3                              for(x=0;x<15;x++)//32行
+ 207   3                              {                               
+ 208   4                                      LCD12864_Write_Cmd((0x80+x),1);//列地址
+ 209   4                                      LCD12864_Write_Cmd((0x80+i),1); //行地址，下半屏，即第三行地址0X88      
+ 210   4                                      for(y=0;y<2;y++)
+ 211   4                                      {
+ 212   5                                              LCD12864_Write_Data(DData[tmp+y]);//读取数据写入LCD
+ 213   5                                      }
+ 214   4                                      tmp+=2;
+ 215   4                              }
+ 216   3                      }
+ 217   2                      i+=8;
+ 218   2              }
+ 219   1              LCD12864_Write_Cmd(0x36,1);     //扩充功能设定
+ 220   1              LCD12864_Write_Cmd(0x30,1);
+ 221   1      }
+ 222          
+ 223          
+ 224          //图形显示128*64
+ 225          void LCD12864_Show_ImageTry3 (unsigned char code *DData)
+ 226          {
+ 227   1              unsigned char x,y;
+ 228   1              unsigned int tmp=0;
+ 229   1              
+ 230   1              LCD12864_Write_Cmd(0x34,1);  // 关闭绘图显示，进入指令模式
+ 231   1          LCD12864_Write_Cmd(0x36,1);  // 打开绘图模式
+ 232   1              
+ 233   1              //分两屏，上半屏和下半屏，因为起始地址不同，需要分开
+ 234   1              for(x=15;x<31;x++){                             //32行
+ 235   2                      LCD12864_Write_Cmd((0x80+x),1);//列地址
+ 236   2                      LCD12864_Write_Cmd((0x80+8),1); //行地址，下半屏，即第三行地址0X88      
+ 237   2                      for(y=0;y<2;y++)
+ 238   2                      {
+ 239   3                              LCD12864_Write_Data(DData[tmp+y]);//读取数据写入LCD
+ 240   3                      }
+C51 COMPILER V9.54   LCD12864                                                              04/09/2026 00:35:59 PAGE 5   
+
+ 241   2                      tmp+=2;         
+ 242   2              }
+ 243   1              LCD12864_Write_Cmd(0x36,1);     //扩充功能设定
+ 244   1              LCD12864_Write_Cmd(0x30,1);
+ 245   1      }
+ 246          
+ 247          
+ 248          
+ 249          //图形显示128*64
+ 250          void LCD12864_Show_ImageTry1 (unsigned char code *DData)
+ 251          {
+ 252   1              unsigned char x,y;
+ 253   1              unsigned int tmp=0;
+ 254   1              
+ 255   1              LCD12864_Write_Cmd(0x34,1);  // 关闭绘图显示，进入指令模式
+ 256   1          LCD12864_Write_Cmd(0x36,1);  // 打开绘图模式
+ 257   1              
+ 258   1              //分两屏，上半屏和下半屏，因为起始地址不同，需要分开
+ 259   1              for(x=13;x<30;x++){                             //32行
+ 260   2                      LCD12864_Write_Cmd((0x80+x),1);//列地址
+ 261   2                      LCD12864_Write_Cmd((0x80+0),1); //行地址，下半屏，即第三行地址0X88      
+ 262   2                      for(y=0;y<2;y++)
+ 263   2                      {
+ 264   3                              LCD12864_Write_Data(DData[tmp+y]);//读取数据写入LCD
+ 265   3                      }
+ 266   2                      tmp+=2;         
+ 267   2              }
+ 268   1              LCD12864_Write_Cmd(0x36,1);     //扩充功能设定
+ 269   1              LCD12864_Write_Cmd(0x30,1);
+ 270   1      }
+ 271          
+ 272          
+ 273          //图形显示128*64
+ 274          void LCD12864_Show_ImageTry22 (unsigned char code *DData)
+ 275          {
+ 276   1              unsigned char x,y,i;
+ 277   1              unsigned int tmp=0;
+ 278   1              
+ 279   1              LCD12864_Write_Cmd(0x34,1);  // 关闭绘图显示，进入指令模式
+ 280   1          LCD12864_Write_Cmd(0x36,1);  // 打开绘图模式
+ 281   1              
+ 282   1              for(i=0;i<9;)//分两屏，上半屏和下半屏，因为起始地址不同，需要分开
+ 283   1              {               
+ 284   2                      if(i==0)
+ 285   2                      {
+ 286   3                              for(x=30;x<32;x++)//32行
+ 287   3                              {                               
+ 288   4                                      LCD12864_Write_Cmd((0x80+x),1);//列地址
+ 289   4                                      LCD12864_Write_Cmd((0x80+i+1),1);       //行地址，下半屏，即第三行地址0X88      
+ 290   4                                      for(y=0;y<2;y++)
+ 291   4                                      {
+ 292   5                                              LCD12864_Write_Data(DData[tmp+y]);//读取数据写入LCD
+ 293   5                                      }
+ 294   4                                      tmp+=2;         
+ 295   4                              }
+ 296   3                      }
+ 297   2                      else
+ 298   2                      {
+ 299   3                              for(x=0;x<15;x++)//32行
+ 300   3                              {                               
+ 301   4                                      LCD12864_Write_Cmd((0x80+x),1);//列地址
+ 302   4                                      LCD12864_Write_Cmd((0x80+i+1),1);       //行地址，下半屏，即第三行地址0X88      
+C51 COMPILER V9.54   LCD12864                                                              04/09/2026 00:35:59 PAGE 6   
+
+ 303   4                                      for(y=0;y<2;y++)
+ 304   4                                      {
+ 305   5                                              LCD12864_Write_Data(DData[tmp+y]);//读取数据写入LCD
+ 306   5                                      }
+ 307   4                                      tmp+=2;
+ 308   4                              }
+ 309   3                      }
+ 310   2                      i+=8;
+ 311   2              }
+ 312   1              LCD12864_Write_Cmd(0x36,1);     //扩充功能设定
+ 313   1              LCD12864_Write_Cmd(0x30,1);
+ 314   1      }
+ 315          
+ 316          
+ 317          //图形显示128*64
+ 318          void LCD12864_Show_ImageTry33 (unsigned char code *DData)
+ 319          {
+ 320   1              unsigned char x,y;
+ 321   1              unsigned int tmp=0;
+ 322   1              
+ 323   1              LCD12864_Write_Cmd(0x34,1);  // 关闭绘图显示，进入指令模式
+ 324   1          LCD12864_Write_Cmd(0x36,1);  // 打开绘图模式
+ 325   1              
+ 326   1              //分两屏，上半屏和下半屏，因为起始地址不同，需要分开
+ 327   1              for(x=15;x<31;x++){                             //32行
+ 328   2                      LCD12864_Write_Cmd((0x80+x),1);//列地址
+ 329   2                      LCD12864_Write_Cmd((0x80+9),1); //行地址，下半屏，即第三行地址0X88      
+ 330   2                      for(y=0;y<2;y++)
+ 331   2                      {
+ 332   3                              LCD12864_Write_Data(DData[tmp+y]);//读取数据写入LCD
+ 333   3                      }
+ 334   2                      tmp+=2;         
+ 335   2              }
+ 336   1              LCD12864_Write_Cmd(0x36,1);     //扩充功能设定
+ 337   1              LCD12864_Write_Cmd(0x30,1);
+ 338   1      }
+ 339          
+ 340          
+ 341          
+ 342          //图形显示128*64
+ 343          void LCD12864_Show_ImageTry11 (unsigned char code *DData)
+ 344          {
+ 345   1              unsigned char x,y;
+ 346   1              unsigned int tmp=0;
+ 347   1              
+ 348   1              LCD12864_Write_Cmd(0x34,1);  // 关闭绘图显示，进入指令模式
+ 349   1          LCD12864_Write_Cmd(0x36,1);  // 打开绘图模式
+ 350   1              
+ 351   1              //分两屏，上半屏和下半屏，因为起始地址不同，需要分开
+ 352   1              for(x=13;x<30;x++){                             //32行
+ 353   2                      LCD12864_Write_Cmd((0x80+x),1);//列地址
+ 354   2                      LCD12864_Write_Cmd((0x80+1),1); //行地址，下半屏，即第三行地址0X88      
+ 355   2                      for(y=0;y<2;y++)
+ 356   2                      {
+ 357   3                              LCD12864_Write_Data(DData[tmp+y]);//读取数据写入LCD
+ 358   3                      }
+ 359   2                      tmp+=2;         
+ 360   2              }
+ 361   1              LCD12864_Write_Cmd(0x36,1);     //扩充功能设定
+ 362   1              LCD12864_Write_Cmd(0x30,1);
+ 363   1      }
+ 364          
+C51 COMPILER V9.54   LCD12864                                                              04/09/2026 00:35:59 PAGE 7   
+
+ 365          
+ 366          
+ 367          // 通用图片显示函数
+ 368          // 参数：
+ 369          // *DData  图片数据数组
+ 370          // imgW    图片宽度  (1~128)
+ 371          // imgH    图片高度  (1~64)
+ 372          // startX  显示起始X坐标(0~127)
+ 373          // startY  显示起始Y坐标(0~63)
+ 374          //void LCD12864_Show_Image_ANY(
+ 375          //    unsigned char code *DData,
+ 376          //    unsigned char IX,
+ 377          //    unsigned char IY,
+ 378          //    unsigned char SX,
+ 379          //    unsigned char SY
+ 380          //)
+ 381          //{
+ 382          //    unsigned char page, col;
+ 383          //    unsigned int tmp = 0;
+ 384          //    unsigned char endX, endY;
+ 385          
+ 386          //    // 边界保护（防止超出屏幕）
+ 387          //      while(IX+SX>128)
+ 388          //      {
+ 389          //              IX=IX-8;
+ 390          //      }
+ 391          //      while(IY+SY>64)
+ 392          //      {
+ 393          //              IY=IY-1;
+ 394          //      }
+ 395          //      
+ 396          //    LCD12864_Write_Cmd(0x34, 1);  // 关闭绘图显示，进入指令模式
+ 397          //    LCD12864_Write_Cmd(0x36, 1);  // 打开绘图模式
+ 398          
+ 399          //      for(x=SX;SX<SX+IX;)
+ 400          //      {
+ 401          //              for(y=SY;Y
+ 402          //    LCD12864_Write_Cmd(0x30, 1);  // 恢复基本指令模式
+ 403          //}
+ 404          
+ 405          
+ 406          //// 修复版：LCD12864 通用图片显示（支持任意尺寸，完整显示128×64）
+ 407          //// x   : 起始列 0~15
+ 408          //// y   : 起始行 0~63
+ 409          //// w   : 宽度（列数 1~16）
+ 410          //// h   : 高度（行数 1~64）
+ 411          //// dat : 图片数组
+ 412          //void lcd_draw_image(unsigned char x, unsigned char y, unsigned char w, unsigned char h, unsigned char co
+             -de *dat)
+ 413          //{
+ 414          //    unsigned int idx = 0;
+ 415          //    unsigned char i, j;
+ 416          //    unsigned char draw_w, draw_h;
+ 417          
+ 418          //    // 越界保护
+ 419          //    if(x >= 16 || y >= 64) return;
+ 420          //    draw_w = (x + w > 16) ? (16 - x) : w;
+ 421          //    draw_h = (y + h > 64) ? (64 - y) : h;
+ 422          //    if(draw_w <= 0 || draw_h <= 0) return;
+ 423          
+ 424          //    //lcd12864_write_cmd(0x34);
+ 425          //    lcd12864_write_cmd(0x36);
+C51 COMPILER V9.54   LCD12864                                                              04/09/2026 00:35:59 PAGE 8   
+
+ 426          
+ 427          //    // ========== 正确写法：上下半屏分开设置 Y 地址 ==========
+ 428          //    for(j = 0; j < draw_h; j++)
+ 429          //    {
+ 430          //        unsigned char cur_y = y + j;  // 当前行 0~63
+ 431          //        unsigned char y_addr;         // 硬件列地址（关键）
+ 432          
+ 433          //        // 12864 绘图硬件规则：
+ 434          //        if(cur_y < 32)
+ 435          //            y_addr = 0;    // 上半屏：Y 固定 = 0
+ 436          //        else
+ 437          //            y_addr = 8;    // 下半屏：Y 固定 = 8
+ 438          
+ 439          //        lcd12864_write_cmd(0x80 + cur_y);   // 写行地址（0~63）
+ 440          //        lcd12864_write_cmd(0x80 + x + y_addr);  // 写列地址：x(0~15) + 半屏基址(0/8)
+ 441          
+ 442          //        // 写入一行图像数据
+ 443          //        for(i = 0; i < draw_w; i++)
+ 444          //        {
+ 445          //            lcd12864_write_data(dat[idx++]);
+ 446          //        }
+ 447          //    }
+ 448          //    lcd12864_write_cmd(0x30);
+ 449          //}
+ 450          
+ 451          
+ 452          
+ 453          
+ 454          
+ 455          
+ 456          
+ 457          
+ 458          
+ 459          
+ 460          
+ 461          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1390    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      51
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
