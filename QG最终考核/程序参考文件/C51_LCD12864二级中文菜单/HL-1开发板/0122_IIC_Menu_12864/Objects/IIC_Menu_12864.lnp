@@ -1,0 +1,11 @@
+".\Objects\main.obj",
+".\Objects\public.obj",
+".\Objects\lcd12864.obj",
+".\Objects\uart.obj",
+".\Objects\timer.obj",
+".\Objects\menu.obj",
+".\Objects\menu2.obj",
+".\Objects\menu3.obj",
+".\Objects\ds1302.obj" 
+TO ".\Objects\IIC_Menu_12864" 
+PRINT(".\Listings\IIC_Menu_12864.m51") RAMSIZE(256) 

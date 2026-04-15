@@ -1,0 +1,214 @@
+C51 COMPILER V9.54   MENU                                                                  04/13/2026 17:04:36 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MENU
+OBJECT MODULE PLACED IN .\Objects\menu.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE menu.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\menu
+                    -.lst) OBJECT(.\Objects\menu.obj)
+
+line level    source
+
+   1          #include "pubilc.h"
+   2          
+   3          
+   4          // ====================== 菜单状态定义 ======================
+   5          typedef enum {
+   6              MENU_MAIN,      // 主菜单
+   7              MENU_GAME_INFO, // 游戏简介
+   8              MENU_LEVEL_SEL, // 难度选择
+   9              GAME_PLAYING    // 进入游戏
+  10          } MenuState;
+  11          
+  12          // ====================== 全局变量 ======================
+  13          MenuState now_state = MENU_MAIN;  // 当前状态
+  14          u8 main_sel = 0;                  // 主菜单选择 0=简介 1=开始
+  15          u8 level_sel = 0;                 // 难度选择 0=简单 1=普通 2=困难
+  16          u8 game_difficulty = 0;          // 最终难度
+  17          // ====================== 菜单显示函数 ======================
+  18          
+  19          // 显示主菜单
+  20          static void Show_MainMenu(void)
+  21          {
+  22   1          LCD12864_Clear();
+  23   1          LCD12864_Show_String(1, 0, "植物大战僵尸");
+  24   1      
+  25   1          if(main_sel == 0)
+  26   1              {
+  27   2                      LCD12864_Set_Location(1,1);
+  28   2                      LCD12864_Write_Data(' ');                                                                                       //左半角英文字符位显示空格
+  29   2                      LCD12864_Write_Data(0x10);
+  30   2              LCD12864_Show_String(2, 1, "游戏简介");
+  31   2              }
+  32   1          else
+  33   1              {
+  34   2                      LCD12864_Show_String(1, 1, "  ");               
+  35   2              LCD12864_Show_String(2, 1, "游戏简介");
+  36   2              }
+  37   1      
+  38   1          if(main_sel == 1)
+  39   1              {
+  40   2                      LCD12864_Set_Location(1,2);
+  41   2                      LCD12864_Write_Data(' ');                                                                                       //左半角英文字符位显示空格
+  42   2                      LCD12864_Write_Data(0x10);
+  43   2              LCD12864_Show_String(2, 2, "开始游戏");
+  44   2              }
+  45   1          else
+  46   1              {
+  47   2                      LCD12864_Show_String(1, 2, "  ");
+  48   2              LCD12864_Show_String(2, 2, "开始游戏");
+  49   2              }
+  50   1      }
+  51          
+  52          // 显示游戏简介
+  53          static void Show_GameInfo(void)
+  54          {
+C51 COMPILER V9.54   MENU                                                                  04/13/2026 17:04:36 PAGE 2   
+
+  55   1          LCD12864_Clear();
+  56   1          LCD12864_Show_String(2,0,"游戏介绍");
+  57   1          LCD12864_Show_String(0,1,"种植植物防御僵尸");
+  58   1          LCD12864_Show_String(1,2,"51+LCD制作");
+  59   1          LCD12864_Show_String(1,3,"按任意键返回");
+  60   1      }
+  61          
+  62          // 显示难度选择
+  63          static void Show_LevelSel(void)
+  64          {
+  65   1          LCD12864_Clear();
+  66   1          LCD12864_Show_String(2,0,"难度选择");
+  67   1      
+  68   1          if(level_sel == 0)
+  69   1              {
+  70   2                      LCD12864_Set_Location(1,1);
+  71   2                      LCD12864_Write_Data(' ');                                                                                       //左半角英文字符位显示空格
+  72   2                      LCD12864_Write_Data(0x10);
+  73   2              LCD12864_Show_String(3,1,"简单");
+  74   2              }
+  75   1          else
+  76   1              {
+  77   2                      LCD12864_Show_String(1, 1, "  ");
+  78   2              LCD12864_Show_String(3,1,"简单");
+  79   2              }
+  80   1      
+  81   1          if(level_sel == 1)
+  82   1              {
+  83   2                      LCD12864_Set_Location(1,2);
+  84   2                      LCD12864_Write_Data(' ');                                                                                       //左半角英文字符位显示空格
+  85   2                      LCD12864_Write_Data(0x10);
+  86   2              LCD12864_Show_String(3,2,"困难");
+  87   2              }
+  88   1          else
+  89   1              {
+  90   2                      LCD12864_Show_String(1, 2, "  ");
+  91   2              LCD12864_Show_String(3,2,"困难");
+  92   2              }
+  93   1      }
+  94          
+  95          // 显示开始游戏提示
+  96          static void Show_GameStart(void)
+  97          {
+  98   1          LCD12864_Clear();
+  99   1          LCD12864_Show_String(0,0,"按任意键游戏开始");
+ 100   1          if(game_difficulty == 0) LCD12864_Show_String(3,3,"难度：简单");
+ 101   1          if(game_difficulty == 1) LCD12864_Show_String(3,3,"难度：困难");
+ 102   1      }
+ 103          
+ 104          // ====================== 菜单逻辑 ======================
+ 105          //菜单按钮控制
+ 106          static void MainMenu_Key(u8 key)
+ 107          {
+ 108   1          if(key == 2) // 上
+ 109   1          {
+ 110   2              if(main_sel > 0) main_sel--;
+ 111   2          }
+ 112   1          if(key == 10) // 下
+ 113   1          {
+ 114   2              if(main_sel < 1) main_sel++;
+ 115   2          }
+ 116   1          if(key == 6) // 确定
+C51 COMPILER V9.54   MENU                                                                  04/13/2026 17:04:36 PAGE 3   
+
+ 117   1          {
+ 118   2              if(main_sel == 0) now_state = MENU_GAME_INFO;//状态切换为游戏简介
+ 119   2              if(main_sel == 1) now_state = MENU_LEVEL_SEL;//状态切换为难度选择
+ 120   2          }
+ 121   1          Show_MainMenu();
+ 122   1      }
+ 123          //返回按钮控制
+ 124          static void GameInfo_Key(u8 key)
+ 125          {
+ 126   1              Show_GameInfo();
+ 127   1          if(key != 0) // 任意键返回
+ 128   1          {
+ 129   2              now_state = MENU_MAIN;//状态切换为菜单主页面
+ 130   2              Show_MainMenu();
+ 131   2          }
+ 132   1      }
+ 133          //难度按钮控制
+ 134          static void LevelSel_Key(u8 key)
+ 135          {
+ 136   1          if(key == 2)
+ 137   1          {
+ 138   2              if(level_sel > 0) level_sel--;
+ 139   2          }
+ 140   1          if(key == 10)
+ 141   1          {
+ 142   2              if(level_sel < 1) level_sel++;
+ 143   2          }
+ 144   1          if(key == 6)
+ 145   1          {
+ 146   2              game_difficulty = level_sel;
+ 147   2                      Show_GameStart();
+ 148   2              now_state = GAME_PLAYING;
+ 149   2              
+ 150   2          }
+ 151   1          Show_LevelSel();
+ 152   1      }
+ 153          
+ 154          // ====================== 菜单总运行 ======================
+ 155          void Menu_Run(void)
+ 156          {
+ 157   1          u8 key;
+ 158   1              u8 last_state = 0xFF; // 记录上一状态，用于自动刷新
+ 159   1          Show_MainMenu();
+ 160   1      
+ 161   1          while(1)
+ 162   1          {
+ 163   2                      if(now_state != last_state)
+ 164   2              {
+ 165   3                  last_state = now_state;
+ 166   3                  switch(now_state)
+ 167   3                  {
+ 168   4                      case MENU_MAIN:      Show_MainMenu();    break;
+ 169   4                      case MENU_GAME_INFO: Show_GameInfo();    break;
+ 170   4                      case MENU_LEVEL_SEL: Show_LevelSel();    break;
+ 171   4                      case GAME_PLAYING:   Show_GameStart();   break;
+ 172   4                  }
+ 173   3              }
+ 174   2              key = MatrixKey();
+ 175   2              if(key == 0) continue;
+ 176   2              switch(now_state)
+ 177   2              {
+ 178   3                  case MENU_MAIN:      MainMenu_Key(key);    break;
+C51 COMPILER V9.54   MENU                                                                  04/13/2026 17:04:36 PAGE 4   
+
+ 179   3                  case MENU_GAME_INFO: GameInfo_Key(key);    break;
+ 180   3                  case MENU_LEVEL_SEL: LevelSel_Key(key);    break;
+ 181   3                  case GAME_PLAYING:   Game_Main();          break;
+ 182   3              }
+ 183   2          }
+ 184   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    536    ----
+   CONSTANT SIZE    =    142    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4       3
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,149 @@
+C51 COMPILER V9.54   PLAYER                                                                04/13/2026 15:56:46 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE PLAYER
+OBJECT MODULE PLACED IN .\Objects\player.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE player.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\pl
+                    -ayer.lst) OBJECT(.\Objects\player.obj)
+
+line level    source
+
+   1          #include "player.h"
+   2          
+   3          u8 Position = 11;
+   4          u8 Last_Position = 11;
+   5          u8 Type_Plant = 0;
+   6          
+   7          extern code unsigned char IMG_DATA_Empty[32];
+   8          extern code unsigned char IMG_DATA_Position[32];
+   9          extern code unsigned char IMG_DATA2_Plant[32];
+  10          extern code unsigned char IMG_DATA_Pototas[32];
+  11          
+  12          //按键控制游标上下移动选择地块并处理
+  13          void Chosen_Position(u8 key)
+  14          {
+  15   1          if(key == 2) // 上
+  16   1          {
+  17   2              if(Position/10!=1)
+  18   2                      {
+  19   3                              Last_Position = Position;
+  20   3                              Position=Position-10;
+  21   3                      }
+  22   2                      Select_Plot(Last_Position,Position);//选择地块后对上一地块进行覆盖或不处理
+  23   2              }
+  24   1          if(key == 10) // 下
+  25   1          {
+  26   2              if(Position/10!=3)
+  27   2                      {
+  28   3                              Last_Position = Position;
+  29   3                              Position=Position+10;
+  30   3                      }
+  31   2                      Select_Plot(Last_Position,Position);
+  32   2              }
+  33   1              if(key == 5) //左
+  34   1          {
+  35   2              if(Position%10!=1)
+  36   2                      {
+  37   3                              Last_Position = Position;
+  38   3                              Position=Position-1;
+  39   3                      }
+  40   2                      Select_Plot(Last_Position,Position);
+  41   2          }
+  42   1          if(key == 7) //右
+  43   1          {
+  44   2              if(Position%10!=2)
+  45   2                      {
+  46   3                              Last_Position = Position;
+  47   3                              Position=Position+1;
+  48   3                      }
+  49   2                      Select_Plot(Last_Position,Position);
+  50   2              }
+  51   1          if(key == 6) // 确定
+  52   1          {
+  53   2                      
+  54   2                      now_state_1 = KEY_PLANT;
+C51 COMPILER V9.54   PLAYER                                                                04/13/2026 15:56:46 PAGE 2   
+
+  55   2          }
+  56   1      
+  57   1      }
+  58          //按键控制植物选择
+  59          void Type_Plant_Key(u8 key)
+  60          {
+  61   1              //选择植物类型按键
+  62   1      
+  63   1              if(key == 5)//左选
+  64   1              {
+  65   2                      if(Type_Plant > 0) Type_Plant--;
+  66   2                      switch(Type_Plant)
+  67   2                      {
+  68   3                              case 1:Show_Position(Position,IMG_DATA_Position); break;//1选择植物
+  69   3                              case 0:Show_Position(Position,IMG_DATA2_Plant); break;//空置
+  70   3                              case 2:Show_Position(Position,IMG_DATA_Pototas); break;//2选择土豆
+  71   3                      }
+  72   2              }
+  73   1              if(key == 7)//右选
+  74   1              {
+  75   2                      if(Type_Plant < 2) Type_Plant++;
+  76   2                      switch(Type_Plant)
+  77   2                      {
+  78   3                              case 1:Show_Position(Position,IMG_DATA_Position); break;
+  79   3                              case 0:Show_Position(Position,IMG_DATA2_Plant); break;
+  80   3                              case 2:Show_Position(Position,IMG_DATA_Pototas); break;
+  81   3                      }
+  82   2              }
+  83   1              if(key == 6)
+  84   1              {
+  85   2                      switch(Type_Plant)
+  86   2                      {
+  87   3                              case 1:Show_Position(Position,IMG_DATA_Position);Set_Plot_State(Position,EMPTY); break;
+  88   3                              case 0:Show_Position(Position,IMG_DATA2_Plant); Set_Plot_State(Position,PEA);break;
+  89   3                              case 2:Show_Position(Position,IMG_DATA_Pototas);Set_Plot_State(Position,POTATO); break;
+  90   3                      }
+  91   2                      now_state_1 = KEY_CHOOSE;
+  92   2              }
+  93   1      }
+  94          
+  95          //显示游标位置通用画面
+  96          void Show_Position(u8 Position_1,u8 code *DData)
+  97          {
+  98   1              switch(Position_1)
+  99   1              {
+ 100   2                      case 11:LCD12864_Show_ImageTry1(DData); break;
+ 101   2                      case 21:LCD12864_Show_ImageTry2(DData); break;
+ 102   2                      case 31:LCD12864_Show_ImageTry3(DData); break;
+ 103   2                      case 12:LCD12864_Show_ImageTry11(DData);break;
+ 104   2                      case 22:LCD12864_Show_ImageTry22(DData);break;
+ 105   2                      case 32:LCD12864_Show_ImageTry33(DData);break;
+ 106   2              }
+ 107   1      }
+ 108          
+ 109          //种植地块选择，选择地块后对上一地块进行覆盖或不处理
+ 110          void Select_Plot(u8 Last_Position,u8 Position)
+ 111          {
+ 112   1              if(Get_Plot_State(Last_Position)==0)
+ 113   1              {
+ 114   2                      Show_Position(Last_Position,IMG_DATA_Empty);
+ 115   2              }
+ 116   1              if(Get_Plot_State(Position)==0)
+C51 COMPILER V9.54   PLAYER                                                                04/13/2026 15:56:46 PAGE 3   
+
+ 117   1              {
+ 118   2                      Show_Position(Position,IMG_DATA_Position);
+ 119   2              }
+ 120   1      }
+ 121          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    385    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

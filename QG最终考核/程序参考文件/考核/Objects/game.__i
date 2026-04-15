@@ -1,0 +1,1 @@
+"game.c" OPTIMIZE (8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\game.lst) OBJECT(.\Objects\game.obj)

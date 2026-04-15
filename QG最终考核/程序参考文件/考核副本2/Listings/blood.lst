@@ -1,0 +1,41 @@
+C51 COMPILER V9.54   BLOOD                                                                 04/13/2026 15:53:35 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE BLOOD
+OBJECT MODULE PLACED IN .\Objects\blood.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE blood.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\blo
+                    -od.lst) OBJECT(.\Objects\blood.obj)
+
+line level    source
+
+   1          #include "blood.h"
+   2          
+   3          
+   4          
+   5          
+   6          
+   7          void blood_main(void)
+   8          {
+   9   1              
+  10   1              
+  11   1      }
+  12          
+  13          
+  14          
+  15          
+  16          
+  17          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =      1    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

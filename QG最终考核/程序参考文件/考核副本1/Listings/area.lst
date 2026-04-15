@@ -1,0 +1,83 @@
+C51 COMPILER V9.54   AREA                                                                  04/11/2026 14:30:34 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE AREA
+OBJECT MODULE PLACED IN .\Objects\area.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE area.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\area
+                    -.lst) OBJECT(.\Objects\area.obj)
+
+line level    source
+
+   1          #include "area.h"
+   2          
+   3          extern code unsigned char IMG_DATA_Empty[32];
+   4          extern code unsigned char IMG_DATA_Position[32];
+   5          
+   6          
+   7          // 定义一块地的状态
+   8          u8 Plot_State[PLOT_NUM];  //用数组来存地块状态，例如{0，0，0，0，1，2}
+   9          
+  10          
+  11          // 初始化：所有地块都是空的
+  12          void Plot_Init(void)
+  13          {
+  14   1          u8 i;
+  15   1          for(i=0; i<PLOT_NUM; i++)
+  16   1          {
+  17   2              Plot_State[i] = EMPTY;
+  18   2          }
+  19   1      }
+  20          
+  21          //定义地块标号为数组标号
+  22          static unsigned char PlotID_To_Index(unsigned char plot_id)
+  23          {
+  24   1          switch(plot_id)
+  25   1          {
+  26   2              case 11: return 0;
+  27   2              case 21: return 1;
+  28   2              case 31: return 2;
+  29   2              case 12: return 3;
+  30   2              case 22: return 4;
+  31   2              case 32: return 5;
+  32   2              default: return 0xFF;
+  33   2          }
+  34   1      }
+  35          
+  36          // ===================== 查询状态 =====================
+  37          // 功能：输入地块编号(0~5)，返回它的状态
+  38          u8 Get_Plot_State(u8 plot_id)
+  39          {
+  40   1          unsigned char index = PlotID_To_Index(plot_id);
+  41   1          if(index >= PLOT_NUM) return 0xFF;
+  42   1          return Plot_State[index];
+  43   1      }
+  44          
+  45          // ===================== 改变状态 =====================
+  46          // 功能：输入地块编号 + 新状态，直接修改
+  47          void Set_Plot_State(u8 plot_id, u8 sta)
+  48          {
+  49   1              unsigned char index = PlotID_To_Index(plot_id);
+  50   1          if(index >= PLOT_NUM) return;
+  51   1          if(sta > POTATO) return; // 只允许 0 1 2
+  52   1          
+  53   1          Plot_State[index] = sta;
+  54   1      }
+C51 COMPILER V9.54   AREA                                                                  04/11/2026 14:30:34 PAGE 2   
+
+  55          
+  56          
+  57          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     95    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      6    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,123 @@
+C51 COMPILER V9.59.0.0   TIMER                                                             02/10/2021 18:05:44 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE TIMER
+OBJECT MODULE PLACED IN .\Objects\timer.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE timer.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\tim
+                    -er.lst) OBJECT(.\Objects\timer.obj)
+
+line level    source
+
+   1          /*
+   2                                                  *** 定时器_c文件 ***
+   3          | 适配硬件:| HL-1开发板
+   4          ===========================================================*/
+   5          
+   6          #include "public.h"
+   7          
+   8          bit flag200ms = 0;              //200ms标志位
+   9          u8 t0rh, t0rl;                  //定时器0高低字节缓存
+  10          u8 cntS = 0;                    //秒计数变量
+  11          u8 cntM = 0;                    //分计数变量
+  12          u8 cntH = 0;                    //时计数变量
+  13          
+  14          /***********************************************************|
+  15          | 名称  :| 定时器0初始化
+  16          | 参数  :| u16 us       - 定时时长us毫秒
+  17          | 返回值        :| 无
+  18          /***********************************************************/
+  19          void timer0_init(u16 us)
+  20          {
+  21   1              u32 tmp;                                        //临时变量
+  22   1              
+  23   1              tmp = (11059200/12*us) / 1000000;               //计算定时us所需计数值
+  24   1              tmp = 65536 - tmp;                                              //计算定时us所需重载值
+  25   1              t0rh = tmp >> 8;                                                //将重载值拆分到定时器0高字节缓存
+  26   1              t0rl = tmp;                                                             //将重载值拆分到定时器0低字节缓存
+  27   1              TH0 = t0rh;                                                             //定时器0装初值
+  28   1              TL0 = t0rl;
+  29   1              
+  30   1              TMOD = TMOD & 0xF0 | 0x01;                              //保持定时器1设置不变，配置定时器0工作模式1
+  31   1              ET0 = 1;                                                                //开定时器0中断
+  32   1              TR0 = 1;                                                                //启动定时器0
+  33   1      }
+  34          
+  35          
+  36          /***********************************************************|
+  37          | 名称  :| 定时器0中断服务函数
+  38          | 参数  :| 无
+  39          | 返回值        :| 无
+  40          /***********************************************************/
+  41          void timer0() interrupt 1
+  42          {
+  43   1              static u8 cnt = 0;                                              //中断计数变量
+  44   1              static u8 cnt200ms = 0;                                 //200ms计数变量
+  45   1              static u8 cntD = 60;
+  46   1              
+  47   1              TH0 = t0rh;                                                             //进中断重装初值
+  48   1              TL0 = t0rl;
+  49   1              
+  50   1              cnt++;
+  51   1              if (cnt >= 200)                                                 //200ms时间到
+  52   1              {
+  53   2                      cnt = 0;
+  54   2                      flag200ms = 1;                                          //200ms标志位置1
+C51 COMPILER V9.59.0.0   TIMER                                                             02/10/2021 18:05:44 PAGE 2   
+
+  55   2                      cnt200ms++;                                                     //200ms计数+1
+  56   2                      if (cnt200ms >= 5)
+  57   2                      {
+  58   3                              cnt200ms = 0;
+  59   3                              
+  60   3                              //进入设置界面倒计时计数----------------------------------
+  61   3                              if (mLayer != 0)
+  62   3                              {
+  63   4                                      cntD--;
+  64   4                                      if (flag_keyAc)                 //如果有任意按键动作
+  65   4                                      {
+  66   5                                              cntD = 60;                      //计数回到初始值
+  67   5                                              flag_keyAc = 0;         //任意按键动作标志位清零
+  68   5                                      }
+  69   4                                      if (cntD <= 0)                  //如果计数倒计到0
+  70   4                                      {
+  71   5                                              cntD = 60;                      //计数回到初始值
+  72   5                                              flag_autoExit = 1;      //自动退出标志位置1
+  73   5                                      }
+  74   4                              }
+  75   3                              
+  76   3                              //时分秒计数-----------------------------------------------
+  77   3      //                      if (mLayer == 0)                                //不在设置状态，才可下述计数
+  78   3      //                      {                                       
+  79   3      //                              cntS++;                                                         //秒计数+1
+  80   3      //                              if (cntS >= 60)                                         //60秒时间到
+  81   3      //                              {
+  82   3      //                                      cntS = 0;
+  83   3      //                                      cntM++;                                                 //分计数+1
+  84   3      //                                      if (cntM >= 60)                                 //60分钟时间到
+  85   3      //                                      {
+  86   3      //                                              cntM = 0;
+  87   3      //                                              cntH++;                                         //小时计数+1
+  88   3      //                                              if (cntH >= 24)                         //24小时到
+  89   3      //                                              {
+  90   3      //                                                      cntH = 0;
+  91   3      //                                              }
+  92   3      //                                      }
+  93   3      //                              }
+  94   3      //                      }
+  95   3                      }
+  96   2              }
+  97   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    167    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      8       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,435 @@
+C51 COMPILER V9.54   BULLET                                                                04/15/2026 00:38:22 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE BULLET
+OBJECT MODULE PLACED IN .\Objects\bullet.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE bullet.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\bu
+                    -llet.lst) OBJECT(.\Objects\bullet.obj)
+
+line level    source
+
+   1          #include "bullet.h"
+   2          
+   3          
+   4          
+   5          
+   6          extern code unsigned char IMG_DATA_Empty[32];
+   7          code u8 One_Bullet[] =
+   8          {
+   9              0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x80,0x03,0xC0,0x03,0xC0,0x01,0x80,0x00,0x00,
+  10              0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, /*' ',0*/
+  11          };
+  12          code u8 Two_Bullet[] =
+  13          {
+  14              0x00,0x00,0x00,0x00,0x00,0x00,0x18,0x18,0x3C,0x3C,0x3C,0x3C,0x18,0x18,0x00,0x00,
+  15              0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, /*' ',0*/
+  16          };
+  17          
+  18          typedef enum {
+  19                  OEPL,
+  20                  PLPL,
+  21                  NOPL,
+  22          } PlantState;
+  23          
+  24          u8 Position_Item_1=11;
+  25          u8 Position_Item_2=21;
+  26          u8 Position_Item_3=31;
+  27          
+  28          u8 addr_track1=13;
+  29          u8 addr_track2=23;
+  30          u8 addr_track3=33;
+  31          
+  32          // 轨道1
+  33          PlantState Plant_state1 = NOPL;
+  34          PlantState last_state1  = NOPL;
+  35          static u8 bullet_pos1   = 2;
+  36          
+  37          // 轨道2
+  38          PlantState Plant_state2 = NOPL;
+  39          PlantState last_state2  = NOPL;
+  40          static u8 bullet_pos2   = 2;
+  41          
+  42          // 轨道3
+  43          PlantState Plant_state3 = NOPL;
+  44          PlantState last_state3  = NOPL;
+  45          static u8 bullet_pos3   = 2;
+  46          
+  47          
+  48          void Bullet_Shoot1(void);
+  49          void Bullet_Shoot2(void);
+  50          void Bullet_Shoot3(void);
+  51          void Change_Plant_state_All(void);
+  52          
+  53          
+  54          void Bullet_Main(void)
+C51 COMPILER V9.54   BULLET                                                                04/15/2026 00:38:22 PAGE 2   
+
+  55          {
+  56   1              Change_Plant_state_All();
+  57   1              Bullet_Shoot1();
+  58   1              Bullet_Shoot2();
+  59   1              Bullet_Shoot3();
+  60   1      }
+  61          
+  62          
+  63          // ====================== 检测3个轨道的植物状态 ======================
+  64          void Change_Plant_state_All(void)
+  65          {
+  66   1          // 所有变量必须定义在函数最顶部！
+  67   1          unsigned char left1, right1, pot1;
+  68   1          unsigned char left2, right2, pot2;
+  69   1          unsigned char left3, right3, pot3;
+  70   1      
+  71   1          // ========== 轨道1 ==========
+  72   1          left1  = (Plot_State[0] == 1);
+  73   1          right1 = (Plot_State[3] == 1);
+  74   1          pot1   = (Plot_State[3] == 2);
+  75   1          if(left1 && right1)      Plant_state1 = PLPL;
+  76   1          else if(left1 || right1 || (left1 && pot1)) Plant_state1 = OEPL;
+  77   1          else                    Plant_state1 = NOPL;
+  78   1      
+  79   1          // ========== 轨道2 ==========
+  80   1          left2  = (Plot_State[1] == 1);
+  81   1          right2 = (Plot_State[4] == 1);
+  82   1          pot2   = (Plot_State[4] == 2);
+  83   1          if(left2 && right2)      Plant_state2 = PLPL;
+  84   1          else if(left2 || right2 || (left2 && pot2)) Plant_state2 = OEPL;
+  85   1          else                    Plant_state2 = NOPL;
+  86   1      
+  87   1          // ========== 轨道3 ==========
+  88   1          left3  = (Plot_State[2] == 1);
+  89   1          right3 = (Plot_State[5] == 1);
+  90   1          pot3   = (Plot_State[5] == 2);
+  91   1          if(left3 && right3)      Plant_state3 = PLPL;
+  92   1          else if(left3 || right3 || (left3 && pot3)) Plant_state3 = OEPL;
+  93   1          else                    Plant_state3 = NOPL;
+  94   1      }
+  95          
+  96          // ====================== 轨道1 子弹 ======================
+  97          void Bullet_Shoot1(void)
+  98          {
+  99   1      
+ 100   1              
+ 101   1              
+ 102   1          if(Plant_state1 == NOPL)
+ 103   1          {
+ 104   2              if(last_state1 != NOPL)
+ 105   2              {
+ 106   3                  LCD12864_Show_ImageTrack1(One_Bullet, bullet_pos1);
+ 107   3                  bullet_pos1 = 2;
+ 108   3              }
+ 109   2              last_state1 = NOPL;
+ 110   2              return;
+ 111   2          }
+ 112   1              
+ 113   1              
+ 114   1          if(delay_noblock(0,200))
+ 115   1          {
+ 116   2                      //////////////////////
+C51 COMPILER V9.54   BULLET                                                                04/15/2026 00:38:22 PAGE 3   
+
+ 117   2                      if(Get_Plot_State(Position_Item_1 +1) == ZOMBIE||Get_Plot_State(Position_Item_1 + 2) == ZOMBIE)
+ 118   2                      {
+ 119   3                              //当在第二格有僵尸时
+ 120   3                              if(Get_Plot_State(Position_Item_1 +1) == ZOMBIE)
+ 121   3                              {
+ 122   4                                      
+ 123   4                                      if(Plant_state1 == OEPL)
+ 124   4                                      {
+ 125   5                                              Set_Plot_Blood_State(Position_Item_1 +1,Get_Plot_Blood_State(Position_Item_1 +1)-20);
+ 126   5                                      }
+ 127   4                                      if(Get_Plot_Blood_State(Position_Item_1 +1)<=0)
+ 128   4                                      {
+ 129   5                                              Set_Plot_State(Position_Item_1 +1, EMPTY);       // 清除僵尸
+ 130   5                                              LCD12864_Show_ImageTrack1(IMG_DATA_Empty, Position_Item_1 +1);     // 清屏
+ 131   5                                      }
+ 132   4                              }
+ 133   3                              //当在子弹那格有僵尸时
+ 134   3                              if(Get_Plot_State(Position_Item_1 + 2) == ZOMBIE)
+ 135   3                              {
+ 136   4                                      
+ 137   4                                      if(Plant_state1 == OEPL)
+ 138   4                                      {
+ 139   5                                              Set_Plot_Blood_State(Position_Item_1 + 2,Get_Plot_Blood_State(Position_Item_1 +2)-20);
+ 140   5                                      }
+ 141   4                                      if(Get_Plot_Blood_State(Position_Item_1 +2)<=0)
+ 142   4                                      {
+ 143   5                                              Set_Plot_State(Position_Item_1 +2, EMPTY);       // 清除僵尸
+ 144   5                                              LCD12864_Show_ImageTrack1(IMG_DATA_Empty, Position_Item_1 +2);     // 清屏
+ 145   5                                      }
+ 146   4                              }
+ 147   3                              last_state1 = Plant_state1;
+ 148   3                              
+ 149   3                              return;
+ 150   3                      }
+ 151   2                      /////////////////////
+ 152   2                      if(Get_Plot_State(Position_Item_1+bullet_pos1)!=ZOMBIE)
+ 153   2                      {
+ 154   3                              LCD12864_Show_ImageTrack1(IMG_DATA_Empty, bullet_pos1);
+ 155   3                              Set_Plot_State(Position_Item_1+bullet_pos1,EMPTY);//将当前地址写为空
+ 156   3                      }
+ 157   2                      bullet_pos1++;
+ 158   2      
+ 159   2                      if( Get_Plot_State(Position_Item_1 + bullet_pos1) == ZOMBIE )
+ 160   2                      {
+ 161   3                              //关键扣血加子弹还原代码
+ 162   3                              last_state1 = Plant_state1;
+ 163   3                              
+ 164   3                              if(Plant_state1 == PLPL)
+ 165   3                              {
+ 166   4                                      Set_Plot_Blood_State(addr_track1,Get_Plot_Blood_State(addr_track1)-40);
+ 167   4                              }
+ 168   3                              else
+ 169   3                              {
+ 170   4                                      Set_Plot_Blood_State(addr_track1,Get_Plot_Blood_State(addr_track1)-20);
+ 171   4                              }
+ 172   3                              
+ 173   3                              if(Get_Plot_Blood_State(addr_track1)<=0)
+ 174   3                              {
+ 175   4                                      Set_Plot_State(Position_Item_1 + bullet_pos1, EMPTY);       // 清除僵尸
+ 176   4                                      LCD12864_Show_ImageTrack1(IMG_DATA_Empty, bullet_pos1);     // 清屏
+ 177   4                                      addr_track1++;
+ 178   4                              }                       
+C51 COMPILER V9.54   BULLET                                                                04/15/2026 00:38:22 PAGE 4   
+
+ 179   3                              bullet_pos1 = 2;
+ 180   3                      }
+ 181   2               
+ 182   2                      if(bullet_pos1 >= 8) bullet_pos1 = 2;
+ 183   2                      
+ 184   2              if(Plant_state1 == PLPL)
+ 185   2                      {
+ 186   3                      LCD12864_Show_ImageTrack1(Two_Bullet, bullet_pos1);
+ 187   3                              Set_Plot_State(Position_Item_1+bullet_pos1,BULLET);
+ 188   3                      }
+ 189   2              else
+ 190   2                      {
+ 191   3                      LCD12864_Show_ImageTrack1(One_Bullet, bullet_pos1);
+ 192   3                              Set_Plot_State(Position_Item_1+bullet_pos1,BULLET);
+ 193   3                      }
+ 194   2          }
+ 195   1          last_state1 = Plant_state1;
+ 196   1      }
+ 197          // ====================== 轨道2 子弹 ======================
+ 198          void Bullet_Shoot2(void)
+ 199          {
+ 200   1          if(Plant_state2 == NOPL)
+ 201   1          {
+ 202   2              if(last_state2 != NOPL)
+ 203   2              {
+ 204   3                  LCD12864_Show_ImageTrack2(One_Bullet, bullet_pos2);
+ 205   3                  bullet_pos2 = 2;
+ 206   3              }
+ 207   2              last_state2 = NOPL;
+ 208   2              return;
+ 209   2          }
+ 210   1              
+ 211   1          if(delay_noblock(1,200))
+ 212   1          {
+ 213   2                      //////////////////////
+ 214   2                      if(Get_Plot_State(Position_Item_2 +1) == ZOMBIE||Get_Plot_State(Position_Item_2 + 2) == ZOMBIE)
+ 215   2                      {
+ 216   3                              //当在第二格有僵尸时
+ 217   3                              if(Get_Plot_State(Position_Item_2 +1) == ZOMBIE)
+ 218   3                              {
+ 219   4                                      
+ 220   4                                      if(Plant_state2 == OEPL)
+ 221   4                                      {
+ 222   5                                              Set_Plot_Blood_State(Position_Item_2 +1,Get_Plot_Blood_State(Position_Item_2 +1)-20);
+ 223   5                                      }
+ 224   4                                      if(Get_Plot_Blood_State(Position_Item_2 +1)<=0)
+ 225   4                                      {
+ 226   5                                              Set_Plot_State(Position_Item_2 +1, EMPTY);       // 清除僵尸
+ 227   5                                              LCD12864_Show_ImageTrack2(IMG_DATA_Empty, Position_Item_2 +1);     // 清屏
+ 228   5                                      }
+ 229   4                              }
+ 230   3                              //当在子弹那格有僵尸时
+ 231   3                              if(Get_Plot_State(Position_Item_2 + 2) == ZOMBIE)
+ 232   3                              {
+ 233   4                                      
+ 234   4                                      if(Plant_state2 == OEPL)
+ 235   4                                      {
+ 236   5                                              Set_Plot_Blood_State(Position_Item_2 + 2,Get_Plot_Blood_State(Position_Item_2 +2)-20);
+ 237   5                                      }
+ 238   4                                      if(Get_Plot_Blood_State(Position_Item_2 +2)<=0)
+ 239   4                                      {
+ 240   5                                              Set_Plot_State(Position_Item_2 +2, EMPTY);       // 清除僵尸
+C51 COMPILER V9.54   BULLET                                                                04/15/2026 00:38:22 PAGE 5   
+
+ 241   5                                              LCD12864_Show_ImageTrack2(IMG_DATA_Empty, Position_Item_2 +2);     // 清屏
+ 242   5                                      }
+ 243   4                              }
+ 244   3                              last_state2 = Plant_state2;
+ 245   3                              
+ 246   3                              return;
+ 247   3                      }
+ 248   2                      /////////////////////
+ 249   2      
+ 250   2                      
+ 251   2                      if(Get_Plot_State(Position_Item_2+bullet_pos2)!=ZOMBIE)
+ 252   2                      {
+ 253   3                              LCD12864_Show_ImageTrack2(IMG_DATA_Empty, bullet_pos2);
+ 254   3                              Set_Plot_State(Position_Item_2+bullet_pos2,EMPTY);//将当前地址写为空
+ 255   3                      }
+ 256   2      
+ 257   2              bullet_pos2++;
+ 258   2                      
+ 259   2                      if( Get_Plot_State(Position_Item_2 + bullet_pos2) == ZOMBIE )
+ 260   2                      {
+ 261   3                              //关键扣血加子弹还原代码
+ 262   3                              last_state2 = Plant_state2;
+ 263   3                              
+ 264   3                              if(Plant_state2 == PLPL)
+ 265   3                              {
+ 266   4                                      Set_Plot_Blood_State(addr_track2,Get_Plot_Blood_State(addr_track2)-40);
+ 267   4                              }
+ 268   3                              else
+ 269   3                              {
+ 270   4                                      Set_Plot_Blood_State(addr_track2,Get_Plot_Blood_State(addr_track2)-20);
+ 271   4                              }
+ 272   3                              
+ 273   3                              if(Get_Plot_Blood_State(addr_track2)<=0)
+ 274   3                              {
+ 275   4                                      Set_Plot_State(Position_Item_2 + bullet_pos2, EMPTY);       // 清除僵尸
+ 276   4                                      LCD12864_Show_ImageTrack2(IMG_DATA_Empty, bullet_pos2);     // 清屏
+ 277   4                                      addr_track2++;
+ 278   4                              }                       
+ 279   3                              bullet_pos2 = 2;
+ 280   3                      }
+ 281   2                      
+ 282   2                      if(bullet_pos2 >= 8) bullet_pos2 = 2;
+ 283   2              if(Plant_state2 == PLPL)
+ 284   2                      {
+ 285   3                      LCD12864_Show_ImageTrack2(Two_Bullet, bullet_pos2);
+ 286   3                              Set_Plot_State(Position_Item_2+bullet_pos2,BULLET);
+ 287   3                      }
+ 288   2              else
+ 289   2                      {
+ 290   3                      LCD12864_Show_ImageTrack2(One_Bullet, bullet_pos2);
+ 291   3                              Set_Plot_State(Position_Item_2+bullet_pos2,BULLET);
+ 292   3                      }
+ 293   2          }
+ 294   1          last_state2 = Plant_state2;
+ 295   1      }
+ 296          
+ 297          // ====================== 轨道3 子弹 ======================
+ 298          void Bullet_Shoot3(void)
+ 299          {
+ 300   1          if(Plant_state3 == NOPL)
+ 301   1          {
+ 302   2              if(last_state3 != NOPL)
+C51 COMPILER V9.54   BULLET                                                                04/15/2026 00:38:22 PAGE 6   
+
+ 303   2              {
+ 304   3                  LCD12864_Show_ImageTrack3(One_Bullet, bullet_pos3);
+ 305   3                  bullet_pos3 = 2;
+ 306   3              }
+ 307   2              last_state3 = NOPL;
+ 308   2              return;
+ 309   2          }
+ 310   1          if(delay_noblock(2,200))
+ 311   1          {
+ 312   2                      
+ 313   2                      //////////////////////
+ 314   2                      if(Get_Plot_State(Position_Item_3 +1) == ZOMBIE||Get_Plot_State(Position_Item_3 + 2) == ZOMBIE)
+ 315   2                      {
+ 316   3                              //当在第二格有僵尸时
+ 317   3                              if(Get_Plot_State(Position_Item_3 +1) == ZOMBIE)
+ 318   3                              {
+ 319   4                                      
+ 320   4                                      if(Plant_state3 == OEPL)
+ 321   4                                      {
+ 322   5                                              Set_Plot_Blood_State(Position_Item_3 +1,Get_Plot_Blood_State(Position_Item_3 +1)-20);
+ 323   5                                      }
+ 324   4                                      if(Get_Plot_Blood_State(Position_Item_3 +1)<=0)
+ 325   4                                      {
+ 326   5                                              Set_Plot_State(Position_Item_3 +1, EMPTY);       // 清除僵尸
+ 327   5                                              LCD12864_Show_ImageTrack3(IMG_DATA_Empty, Position_Item_3 +1);     // 清屏
+ 328   5                                      }
+ 329   4                              }
+ 330   3                              //当在子弹那格有僵尸时
+ 331   3                              if(Get_Plot_State(Position_Item_3 + 2) == ZOMBIE)
+ 332   3                              {
+ 333   4                                      
+ 334   4                                      if(Plant_state3 == OEPL)
+ 335   4                                      {
+ 336   5                                              Set_Plot_Blood_State(Position_Item_3 + 2,Get_Plot_Blood_State(Position_Item_3 +2)-20);
+ 337   5                                      }
+ 338   4                                      if(Get_Plot_Blood_State(Position_Item_3 +2)<=0)
+ 339   4                                      {
+ 340   5                                              Set_Plot_State(Position_Item_3 +2, EMPTY);       // 清除僵尸
+ 341   5                                              LCD12864_Show_ImageTrack3(IMG_DATA_Empty, Position_Item_3 +2);     // 清屏
+ 342   5                                      }
+ 343   4                              }
+ 344   3                              last_state3 = Plant_state3;
+ 345   3                              
+ 346   3                              return;
+ 347   3                      }
+ 348   2                      /////////////////////
+ 349   2                      
+ 350   2                      
+ 351   2                      if(Get_Plot_State(Position_Item_3+bullet_pos3)!=ZOMBIE)
+ 352   2                      {
+ 353   3                              LCD12864_Show_ImageTrack3(IMG_DATA_Empty, bullet_pos3);
+ 354   3                              Set_Plot_State(Position_Item_3+bullet_pos3,EMPTY);//将当前地址写为空
+ 355   3                      }
+ 356   2                      
+ 357   2                      
+ 358   2                      bullet_pos3++; 
+ 359   2                      
+ 360   2                      
+ 361   2                      if( Get_Plot_State(Position_Item_3 + bullet_pos3) == ZOMBIE )
+ 362   2                      {
+ 363   3                              //关键扣血加子弹还原代码
+ 364   3                              last_state3 = Plant_state3;
+C51 COMPILER V9.54   BULLET                                                                04/15/2026 00:38:22 PAGE 7   
+
+ 365   3                              
+ 366   3                              if(Plant_state3 == PLPL)
+ 367   3                              {
+ 368   4                                      Set_Plot_Blood_State(addr_track3,Get_Plot_Blood_State(addr_track3)-40);
+ 369   4                              }
+ 370   3                              else
+ 371   3                              {
+ 372   4                                      Set_Plot_Blood_State(addr_track3,Get_Plot_Blood_State(addr_track3)-20);
+ 373   4                              }
+ 374   3                              
+ 375   3                              if(Get_Plot_Blood_State(addr_track3)<=0)
+ 376   3                              {
+ 377   4                                      Set_Plot_State(Position_Item_3 + bullet_pos3, EMPTY);       // 清除僵尸
+ 378   4                                      LCD12864_Show_ImageTrack3(IMG_DATA_Empty, bullet_pos3);     // 清屏
+ 379   4                                      addr_track3++;
+ 380   4                              }                       
+ 381   3                              bullet_pos3 = 2;
+ 382   3                      }
+ 383   2                      
+ 384   2                      
+ 385   2                      if(bullet_pos3 >= 8) bullet_pos3 = 2;
+ 386   2              if(Plant_state3 == PLPL)
+ 387   2                      {
+ 388   3                      LCD12864_Show_ImageTrack3(Two_Bullet, bullet_pos3);
+ 389   3                              Set_Plot_State(Position_Item_3+bullet_pos3,BULLET);
+ 390   3                      }
+ 391   2              else
+ 392   2                      {
+ 393   3                      LCD12864_Show_ImageTrack3(One_Bullet, bullet_pos3);
+ 394   3                              Set_Plot_State(Position_Item_3+bullet_pos3,BULLET);
+ 395   3                      }
+ 396   2          }
+ 397   1          last_state3 = Plant_state3;
+ 398   1      }
+ 399             
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1316    ----
+   CONSTANT SIZE    =     64    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     15    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

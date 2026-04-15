@@ -1,0 +1,1 @@
+"player.c" OPTIMIZE (8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\player.lst) OBJECT(.\Objects\player.obj)

@@ -1,0 +1,125 @@
+C51 COMPILER V9.54   TIMER0                                                                04/13/2026 15:56:46 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE TIMER0
+OBJECT MODULE PLACED IN .\Objects\Timer0.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Timer0.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\Ti
+                    -mer0.lst) OBJECT(.\Objects\Timer0.obj)
+
+line level    source
+
+   1          #include "Timer0.h"
+   2          
+   3          u16 sys_ms = 0;
+   4          
+   5          // 三个轨道独立时间，把原来的一个删掉，换成三个！
+   6          u16 last_ms1 = 0;  // 轨道1专用
+   7          u16 last_ms2 = 0;  // 轨道2专用
+   8          u16 last_ms3 = 0;  // 轨道3专用
+   9          
+  10          u16 last_msZ1 = 0;  // 
+  11          u16 last_msZ2 = 0;  // 
+  12          u16 last_msZ3 = 0;  // 
+  13          u16 last_msZO = 0;  // 
+  14          
+  15          void Timer0_Init(void)
+  16          {
+  17   1          TMOD |= 0x01;
+  18   1          TH0 = 0xFC;
+  19   1          TL0 = 0x67;
+  20   1          ET0 = 1;
+  21   1          TR0 = 1;
+  22   1          EA  = 1;
+  23   1      }
+  24          
+  25          void Timer0_ISR(void) interrupt 1
+  26          {
+  27   1          TH0 = 0xFC;
+  28   1          TL0 = 0x67;
+  29   1          sys_ms++;
+  30   1      }
+  31          
+  32          
+  33          // 下面这三个函数，每个轨道用自己的！互不干扰！
+  34          u8 delay_noblock1(u16 ms)
+  35          {
+  36   1          if(sys_ms - last_ms1 >= ms)
+  37   1          {
+  38   2              last_ms1 = sys_ms;
+  39   2              return 1;
+  40   2          }
+  41   1          return 0;
+  42   1      }
+  43          
+  44          u8 delay_noblock2(u16 ms)
+  45          {
+  46   1          if(sys_ms - last_ms2 >= ms)
+  47   1          {
+  48   2              last_ms2 = sys_ms;
+  49   2              return 1;
+  50   2          }
+  51   1          return 0;
+  52   1      }
+  53          
+  54          u8 delay_noblock3(u16 ms)
+C51 COMPILER V9.54   TIMER0                                                                04/13/2026 15:56:46 PAGE 2   
+
+  55          {
+  56   1          if(sys_ms - last_ms3 >= ms)
+  57   1          {
+  58   2              last_ms3 = sys_ms;
+  59   2              return 1;
+  60   2          }
+  61   1          return 0;
+  62   1      }
+  63          
+  64          u8 delay_noblockZ1(u16 ms)
+  65          {
+  66   1          if(sys_ms - last_msZ1 >= ms)
+  67   1          {
+  68   2              last_msZ1 = sys_ms;
+  69   2              return 1;
+  70   2          }
+  71   1          return 0;
+  72   1      }
+  73          u8 delay_noblockZ2(u16 ms)
+  74          {
+  75   1          if(sys_ms - last_msZ2 >= ms)
+  76   1          {
+  77   2              last_msZ2 = sys_ms;
+  78   2              return 1;
+  79   2          }
+  80   1          return 0;
+  81   1      }
+  82          u8 delay_noblockZ3(u16 ms)
+  83          {
+  84   1          if(sys_ms - last_msZ3 >= ms)
+  85   1          {
+  86   2              last_msZ3 = sys_ms;
+  87   2              return 1;
+  88   2          }
+  89   1          return 0;
+  90   1      }
+  91          u8 delay_ZOblock(u16 ms)
+  92          {
+  93   1          if(sys_ms - last_msZO >= ms)
+  94   1          {
+  95   2              last_msZO = sys_ms;
+  96   2              return 1;
+  97   2          }
+  98   1          return 0;
+  99   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    245    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     16    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

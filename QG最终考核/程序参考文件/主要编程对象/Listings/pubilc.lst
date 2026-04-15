@@ -1,0 +1,26 @@
+C51 COMPILER V9.54   PUBILC                                                                04/11/2026 16:26:37 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE PUBILC
+OBJECT MODULE PLACED IN .\Objects\pubilc.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE pubilc.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\pu
+                    -bilc.lst) OBJECT(.\Objects\pubilc.obj)
+
+line level    source
+
+   1          #include "public.h"
+*** WARNING C318 IN LINE 1 OF pubilc.c: can't open file 'public.h'
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

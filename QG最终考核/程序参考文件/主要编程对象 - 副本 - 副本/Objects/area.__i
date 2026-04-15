@@ -1,0 +1,1 @@
+"area.c" OPTIMIZE (8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\area.lst) OBJECT(.\Objects\area.obj)

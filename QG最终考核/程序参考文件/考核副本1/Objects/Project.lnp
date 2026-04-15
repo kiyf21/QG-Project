@@ -1,0 +1,14 @@
+".\Objects\main.obj",
+".\Objects\pubilc.obj",
+".\Objects\menu.obj",
+".\Objects\LCD12864.obj",
+".\Objects\Delay.obj",
+".\Objects\MatrixKey.obj",
+".\Objects\game.obj",
+".\Objects\area.obj",
+".\Objects\player.obj",
+".\Objects\bullet.obj",
+".\Objects\Timer0.obj" 
+TO ".\Objects\Project" 
+PRINT(".\Listings\Project.m51") RAMSIZE(256) 
+DISABLEWARNING (16) 

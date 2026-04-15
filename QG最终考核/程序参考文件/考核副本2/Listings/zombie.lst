@@ -1,0 +1,278 @@
+C51 COMPILER V9.54   ZOMBIE                                                                04/13/2026 15:53:35 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE ZOMBIE
+OBJECT MODULE PLACED IN .\Objects\zombie.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE zombie.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\zo
+                    -mbie.lst) OBJECT(.\Objects\zombie.obj)
+
+line level    source
+
+   1          #include "zombie.h"
+   2          
+   3          
+   4          extern code unsigned char IMG_DATA_Empty[32]; 
+   5          code unsigned char IMG_DATA_Person[32] = 
+   6          {
+   7              0x01,0xC0,0x06,0x38,0x30,0x0C,0x60,0x04,0x46,0x67,0x40,0xB2,0x71,0x0A,0x49,0x6A,
+   8              0x4B,0x10,0x70,0xE6,0x3E,0x01,0x0F,0x88,0x0D,0xD0,0x18,0x34,0x09,0xD4,0x01,0x14,
+   9          };
+  10          
+  11          
+  12          //僵尸出怪顺序
+  13          u8 zombie_wave[]={3,2,1,2,1,3};
+  14          //当前出怪顺序
+  15          u8 wave_now = 0;
+  16          //一共多少只僵尸
+  17          u8 wave_total = 6;
+  18          
+  19          
+  20          u8 Zombie_Pos1 = 7;        // 僵尸当前位置
+  21          u8 Zombie_Pos2 = 7;
+  22          u8 Zombie_Pos3 = 7;
+  23          
+  24          u8 Position_Zombie_1 = 11; // 僵尸轨道基地址
+  25          u8 Position_Zombie_2 = 21;
+  26          u8 Position_Zombie_3 = 31;
+  27          
+  28          void Read_zombie_wave(void);
+  29          void Detect_Zombie1_move(void);
+  30          void Detect_Zombie2_move(void);
+  31          void Detect_Zombie3_move(void);
+  32          
+  33          //主函数
+  34          void Zombie_Main(void)
+  35          {
+  36   1              Read_zombie_wave();
+  37   1              Detect_Zombie1_move();
+  38   1              Detect_Zombie2_move();
+  39   1              Detect_Zombie3_move();
+  40   1      }
+  41          
+  42          
+  43          void Read_zombie_wave(void)
+  44          {
+  45   1              // 如果已经出完所有僵尸，直接退出
+  46   1          if(wave_now >= wave_total)
+  47   1          {
+  48   2              return;
+  49   2          }
+  50   1              //设置每3s的中断，每3s出一次怪
+  51   1              if(delay_ZOblock(4000) && wave_now < wave_total)
+  52   1              {
+  53   2                      switch(zombie_wave[wave_now])
+  54   2                      {
+C51 COMPILER V9.54   ZOMBIE                                                                04/13/2026 15:53:35 PAGE 2   
+
+  55   3                              case 1:
+  56   3                                      Set_Plot_State(Position_Zombie_1+7,ZOMBIE);
+  57   3                                      LCD12864_Show_ImageBullet1(IMG_DATA_Person, 7);
+  58   3                                      break;
+  59   3                              case 2:
+  60   3                                      Set_Plot_State(Position_Zombie_2+7,ZOMBIE);
+  61   3                                      LCD12864_Show_ImageBullet2(IMG_DATA_Person, 7);
+  62   3                                      break;                  
+  63   3                              case 3:
+  64   3                                      Set_Plot_State(Position_Zombie_3+7,ZOMBIE);
+  65   3                                      LCD12864_Show_ImageBullet3(IMG_DATA_Person, 7);
+  66   3                                      break;
+  67   3                      }
+  68   2                      wave_now++;
+  69   2              }
+  70   1      }
+  71          
+  72          
+  73          void Detect_Zombie1_move(void)
+  74          {
+  75   1              u8 i;
+  76   1              if( !delay_noblockZ1(1500) )
+  77   1              {
+  78   2                      return; // 时间没到，全部不动
+  79   2              }
+  80   1      
+  81   1              // 时间到 → 整行所有僵尸一起走
+  82   1              for(i=1; i<=7; i++)
+  83   1              {
+  84   2                      // 如果是僵尸
+  85   2                      if(Get_Plot_State(Position_Zombie_1+i) == ZOMBIE)
+  86   2                      {
+  87   3                              // 前面为空才能走
+  88   3                              if(Get_Plot_State(Position_Zombie_1 + (i-1)) == EMPTY)
+  89   3                              {
+  90   4                                      // 擦掉当前
+  91   4                                      LCD12864_Show_ImageBullet1(IMG_DATA_Empty, i);
+  92   4                                      Set_Plot_State(Position_Zombie_1 + i, EMPTY);
+  93   4      
+  94   4                                      // 左移一格
+  95   4                                      LCD12864_Show_ImageBullet1(IMG_DATA_Person, i-1);
+  96   4                                      Set_Plot_State(Position_Zombie_1 + (i-1), ZOMBIE);
+  97   4                              }
+  98   3                      }
+  99   2              }
+ 100   1      }
+ 101          
+ 102          void Detect_Zombie2_move(void)
+ 103          {
+ 104   1              u8 y;
+ 105   1              if( !delay_noblockZ2(2000) )
+ 106   1              {
+ 107   2                      return; // 时间没到，全部不动
+ 108   2              }
+ 109   1      
+ 110   1              // 时间到 → 整行所有僵尸一起走
+ 111   1              for(y=1; y<=7; y++)
+ 112   1              {
+ 113   2                      // 如果是僵尸
+ 114   2                      if(Get_Plot_State(Position_Zombie_2+y) == ZOMBIE)
+ 115   2                      {
+ 116   3                              // 前面为空才能走
+C51 COMPILER V9.54   ZOMBIE                                                                04/13/2026 15:53:35 PAGE 3   
+
+ 117   3                              if(Get_Plot_State(Position_Zombie_2 + (y-1)) == EMPTY)
+ 118   3                              {
+ 119   4                                      // 擦掉当前
+ 120   4                                      LCD12864_Show_ImageBullet2(IMG_DATA_Empty, y);
+ 121   4                                      Set_Plot_State(Position_Zombie_2 + y, EMPTY);
+ 122   4      
+ 123   4                                      // 左移一格
+ 124   4                                      LCD12864_Show_ImageBullet2(IMG_DATA_Person, y-1);
+ 125   4                                      Set_Plot_State(Position_Zombie_2 + (y-1), ZOMBIE);
+ 126   4                              }
+ 127   3                      }
+ 128   2              }
+ 129   1      }
+ 130          void Detect_Zombie3_move(void)
+ 131          {
+ 132   1              u8 z;
+ 133   1              if( !delay_noblockZ3(3000) )
+ 134   1              {
+ 135   2                      return; // 时间没到，全部不动
+ 136   2              }
+ 137   1      
+ 138   1              // 时间到 → 整行所有僵尸一起走
+ 139   1              for(z=1; z<=7; z++)
+ 140   1              {
+ 141   2                      // 如果是僵尸
+ 142   2                      if(Get_Plot_State(Position_Zombie_3+z) == ZOMBIE)
+ 143   2                      {
+ 144   3                              // 前面为空才能走
+ 145   3                              if(Get_Plot_State(Position_Zombie_3 + (z-1)) == EMPTY)
+ 146   3                              {
+ 147   4                                      // 擦掉当前
+ 148   4                                      LCD12864_Show_ImageBullet3(IMG_DATA_Empty, z);
+ 149   4                                      Set_Plot_State(Position_Zombie_3 + z, EMPTY);
+ 150   4      
+ 151   4                                      // 左移一格
+ 152   4                                      LCD12864_Show_ImageBullet3(IMG_DATA_Person, z-1);
+ 153   4                                      Set_Plot_State(Position_Zombie_3 + (z-1), ZOMBIE);
+ 154   4                              }
+ 155   3                      }
+ 156   2              }
+ 157   1      }
+ 158          //                      case 2:
+ 159          //                              LCD12864_Show_ImageBullet2(IMG_DATA_Person, Zombie_Pos2);
+ 160          //                              LCD12864_Show_ImageBullet1(IMG_DATA_Empty, Zombie_Pos1);
+ 161          //                              LCD12864_Show_ImageBullet3(IMG_DATA_Empty, Zombie_Pos3);
+ 162          //                              Set_Plot_State(Position_Zombie_2+7,ZOMBIE);
+ 163          //                              break;
+ 164          //                      case 3:
+ 165          //                              LCD12864_Show_ImageBullet3(IMG_DATA_Person, Zombie_Pos3);
+ 166          //                              LCD12864_Show_ImageBullet2(IMG_DATA_Empty, Zombie_Pos2);
+ 167          //                              LCD12864_Show_ImageBullet1(IMG_DATA_Empty, Zombie_Pos1);
+ 168          //                              Set_Plot_State(Position_Zombie_3+7,ZOMBIE);
+ 169          //                              break;                  
+ 170                          
+ 171          
+ 172          
+ 173          //                              // ==============================================
+ 174          //                              // 前方是植物 → 僵尸不动！
+ 175          //                              // ==============================================
+ 176          //                              if(Get_Plot_State(Position_Zombie_1 + (i-1)) == PEA||Get_Plot_State(Position_Zombie_1 + (i-1)) == PO
+             -TATO)
+ 177          //                              {
+C51 COMPILER V9.54   ZOMBIE                                                                04/13/2026 15:53:35 PAGE 4   
+
+ 178          //                                      return; // 停止
+ 179          //                              }
+ 180          
+ 181          //                              // ==============================================
+ 182          //                              // 前方是空 → 可以移动
+ 183          //                              // ==============================================
+ 184                                          //僵尸的前一格是空才动
+ 185          
+ 186          
+ 187          
+ 188          //      Zombie_Move1();
+ 189          //      Zombie_Move2();
+ 190          //      Zombie_Move3();
+ 191          
+ 192          
+ 193          //void Zombie_Move1(void)
+ 194          //{
+ 195          ////    if(Get_Plot_State(Position_Zombie_1+Zombie_Pos1)!=EMPTY) 
+ 196          ////    {
+ 197          ////            return;
+ 198          ////    }
+ 199          //      if(delay_noblockZ1(2000))
+ 200          //    {
+ 201          //        LCD12864_Show_ImageBullet1(IMG_DATA_Empty, Zombie_Pos1);
+ 202          //              Set_Plot_State(Position_Zombie_1+Zombie_Pos1,EMPTY);//将当前地址写为空
+ 203          
+ 204          //        Zombie_Pos1--; 
+ 205          //              if(Zombie_Pos1<=1) Zombie_Pos1=7;
+ 206          //              
+ 207          //              LCD12864_Show_ImageBullet1(IMG_DATA_Person, Zombie_Pos1);
+ 208          //              Set_Plot_State(Position_Zombie_1+Zombie_Pos1,ZOMBIE);//将当前地址写为僵尸
+ 209          //    }
+ 210          //}
+ 211          
+ 212          //void Zombie_Move2(void)
+ 213          //{
+ 214          ////    if(Get_Plot_State(Position_Zombie_2+Zombie_Pos2)!=EMPTY) 
+ 215          ////    {
+ 216          ////            return;
+ 217          ////    }
+ 218          //      if(delay_noblockZ2(2000))
+ 219          //    {
+ 220          //        LCD12864_Show_ImageBullet2(IMG_DATA_Empty, Zombie_Pos2);
+ 221          //              Set_Plot_State(Position_Zombie_2+Zombie_Pos2,EMPTY);//将当前地址写为空
+ 222          
+ 223          //        Zombie_Pos2--; 
+ 224          //              if(Zombie_Pos2<=1) Zombie_Pos2=7;
+ 225          //              LCD12864_Show_ImageBullet2(IMG_DATA_Person, Zombie_Pos2);
+ 226          //              Set_Plot_State(Position_Zombie_2+Zombie_Pos2,ZOMBIE);//将当前地址写为僵尸
+ 227          //    }
+ 228          //}
+ 229          //void Zombie_Move3(void)
+ 230          //{
+ 231          ////    if(Get_Plot_State(Position_Zombie_3+Zombie_Pos3)!=EMPTY) 
+ 232          ////    {
+ 233          ////            return;
+ 234          ////    }
+ 235          //      if(delay_noblockZ3(2000))
+ 236          //    {
+ 237          //        LCD12864_Show_ImageBullet3(IMG_DATA_Empty, Zombie_Pos3);
+ 238          //              Set_Plot_State(Position_Zombie_3+Zombie_Pos3,EMPTY);//将当前地址写为空
+ 239          
+C51 COMPILER V9.54   ZOMBIE                                                                04/13/2026 15:53:35 PAGE 5   
+
+ 240          //        Zombie_Pos3--; 
+ 241          //              if(Zombie_Pos3<=1) Zombie_Pos3=7;
+ 242          //              LCD12864_Show_ImageBullet3(IMG_DATA_Person, Zombie_Pos3);
+ 243          //              Set_Plot_State(Position_Zombie_3+Zombie_Pos3,ZOMBIE);//将当前地址写为僵尸
+ 244          //    }
+ 245          //}
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    384    ----
+   CONSTANT SIZE    =     32    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     14       3
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

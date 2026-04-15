@@ -1,0 +1,102 @@
+C51 COMPILER V9.54   AREA                                                                  04/13/2026 15:53:34 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE AREA
+OBJECT MODULE PLACED IN .\Objects\area.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE area.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\area
+                    -.lst) OBJECT(.\Objects\area.obj)
+
+line level    source
+
+   1          #include "area.h"
+   2          
+   3          extern code unsigned char IMG_DATA_Empty[32];
+   4          extern code unsigned char IMG_DATA_Position[32];
+   5          
+   6          
+   7          
+   8          // 定义一块地的状态
+   9          u8 Plot_State[PLOT_NUM];  //用数组来存地块状态
+  10          
+  11          
+  12          // 初始化：所有地块都是空的//扩展到24地块用于处理僵尸和子弹的地块占用问题
+  13          void Plot_Init(void)
+  14          {
+  15   1          u8 i;
+  16   1          for(i=0; i<PLOT_NUM; i++)
+  17   1          {
+  18   2              Plot_State[i] = EMPTY;
+  19   2          }
+  20   1      }
+  21          
+  22          //定义地块标号为数组标号
+  23          static unsigned char PlotID_To_Index(unsigned char plot_id)
+  24          {
+  25   1          switch(plot_id)
+  26   1          {
+  27   2              case 11: return 0;
+  28   2              case 21: return 1;
+  29   2              case 31: return 2;
+  30   2              case 12: return 3;
+  31   2              case 22: return 4;
+  32   2              case 32: return 5;
+  33   2                      case 13: return 6;
+  34   2              case 23: return 7;
+  35   2              case 33: return 8;
+  36   2              case 14: return 9;
+  37   2              case 24: return 10;
+  38   2              case 34: return 11;
+  39   2                      case 15: return 12;
+  40   2              case 25: return 13;
+  41   2              case 35: return 14;
+  42   2              case 16: return 15;
+  43   2              case 26: return 16;
+  44   2              case 36: return 17;
+  45   2                      case 17: return 18;
+  46   2              case 27: return 19;
+  47   2              case 37: return 20;
+  48   2              case 18: return 21;
+  49   2              case 28: return 22;
+  50   2              case 38: return 23;
+  51   2              default: return 0xFF;
+  52   2          }
+  53   1      }
+  54          
+C51 COMPILER V9.54   AREA                                                                  04/13/2026 15:53:34 PAGE 2   
+
+  55          // ===================== 查询状态 =====================
+  56          // 功能：输入地块编号(0~23)，返回它的状态
+  57          u8 Get_Plot_State(u8 plot_id)
+  58          {
+  59   1          unsigned char index = PlotID_To_Index(plot_id);
+  60   1          if(index >= PLOT_NUM) return 0xFF;
+  61   1          return Plot_State[index];
+  62   1      }
+  63          
+  64          // ===================== 改变状态 =====================
+  65          // 功能：输入地块编号 + 新状态，直接修改
+  66          void Set_Plot_State(u8 plot_id, u8 sta)
+  67          {
+  68   1              unsigned char index = PlotID_To_Index(plot_id);
+  69   1          if(index >= PLOT_NUM) return;
+  70   1          //if(sta > POTATO) return; // 只允许 0 1 2
+  71   1          
+  72   1          Plot_State[index] = sta;
+  73   1      }
+  74          
+  75          
+  76          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    229    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     24    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
