@@ -1,0 +1,57 @@
+C51 COMPILER V9.54   SCORE                                                                 04/16/2026 13:21:10 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE SCORE
+OBJECT MODULE PLACED IN .\Objects\score.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE score.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\sco
+                    -re.lst) OBJECT(.\Objects\score.obj)
+
+line level    source
+
+   1          #include "score.h"
+   2          
+   3          u8 score = 0;
+   4          
+   5          void Show_SaveScore(void)
+   6          {
+   7   1              LCD12864_Clear();
+   8   1          score=AT24C02_ReadByte(0);
+   9   1              LCD12864_Show_String(0,0,"上次存档得分：");
+  10   1              Game_Show_Score(3,1,score);
+  11   1              LCD12864_Show_String(0,2,"按任意键返回");
+  12   1      }
+  13          
+  14          
+  15          
+  16          void Game_Show_Score(u8 x,u8 y,u8 score)
+  17          {
+  18   1              switch(score)
+  19   1              {
+  20   2                      case 0:LCD12864_Show_String(x,y,"00");break;
+  21   2                      case 1:LCD12864_Show_String(x,y,"10");break;
+  22   2                      case 2:LCD12864_Show_String(x,y,"20");break;
+  23   2                      case 3:LCD12864_Show_String(x,y,"30");break;
+  24   2                      case 4:LCD12864_Show_String(x,y,"40");break;
+  25   2                      case 5:LCD12864_Show_String(x,y,"50");break;
+  26   2                      case 6:LCD12864_Show_String(x,y,"60");break;    
+  27   2                      case 7:LCD12864_Show_String(x,y,"70");break;
+  28   2                      case 8:LCD12864_Show_String(x,y,"80");break;
+  29   2                      case 9:LCD12864_Show_String(x,y,"90");break;
+  30   2              }
+  31   1      }
+  32          
+  33                          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    177    ----
+   CONSTANT SIZE    =     58    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

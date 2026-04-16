@@ -1,0 +1,127 @@
+C51 COMPILER V9.54   BLOOD                                                                 04/16/2026 12:30:30 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE BLOOD
+OBJECT MODULE PLACED IN .\Objects\blood.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE blood.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\blo
+                    -od.lst) OBJECT(.\Objects\blood.obj)
+
+line level    source
+
+   1          #include "blood.h"
+   2          
+   3          //定义一个血量数组
+   4          idata u8 Plot_Blood[PLOT_NUM_BLOOD];
+   5          
+   6          
+   7          
+   8          // 初始化：所有地块都是空的//扩展到24地块用于处理僵尸和子弹的地块占用问题
+   9          void Plot_BLOOD_Init(void)
+  10          {
+  11   1          u8 i;
+  12   1          for(i=0; i<PLOT_NUM_BLOOD; i++)
+  13   1          {
+  14   2              Plot_Blood[i] = NOBLOOD;
+  15   2          }
+  16   1      }
+  17          
+  18          
+  19          //定义地块标号为数组标号
+  20          static unsigned char Redefine_Plot_Num(unsigned char plot_id)
+  21          {
+  22   1          switch(plot_id)
+  23   1          {
+  24   2              case 11: return 0;
+  25   2              case 21: return 1;
+  26   2              case 31: return 2;
+  27   2              case 12: return 3;
+  28   2              case 22: return 4;
+  29   2              case 32: return 5;
+  30   2                      
+  31   2                      
+  32   2                      
+  33   2                      case 13: return 6;
+  34   2              case 23: return 7;
+  35   2              case 33: return 8;
+  36   2              case 14: return 9;
+  37   2              case 24: return 10;
+  38   2              case 34: return 11;
+  39   2                      case 15: return 12;
+  40   2              case 25: return 13;
+  41   2              case 35: return 14;
+  42   2              case 16: return 15;
+  43   2              case 26: return 16;
+  44   2              case 36: return 17;
+  45   2                      case 17: return 18;
+  46   2              case 27: return 19;
+  47   2              case 37: return 20;
+  48   2              case 18: return 21;
+  49   2              case 28: return 22;
+  50   2              case 38: return 23;
+  51   2              default: return 0xFF;
+  52   2          }
+  53   1      }
+  54          
+C51 COMPILER V9.54   BLOOD                                                                 04/16/2026 12:30:30 PAGE 2   
+
+  55          
+  56          //读取地块的血量状态
+  57          u8 Get_Plot_Blood_State(u8 plot_id)
+  58          {
+  59   1          unsigned char index = Redefine_Plot_Num(plot_id);
+  60   1          if(index >= PLOT_NUM_BLOOD) return 0xFF;
+  61   1          return Plot_Blood[index];
+  62   1      }
+  63          
+  64          
+  65          //改变地块的血量状态
+  66          void Set_Plot_Blood_State(u8 plot_id, char sta)
+  67          {
+  68   1              unsigned char index = Redefine_Plot_Num(plot_id);
+  69   1          if(index >= PLOT_NUM_BLOOD) return;
+  70   1              if(sta<=0)
+  71   1              {
+  72   2                      sta=0;
+  73   2              }
+  74   1          Plot_Blood[index] = sta;
+  75   1      }       
+  76          
+  77          
+  78          
+  79          
+  80          
+  81          
+  82          
+  83          
+  84          
+  85          
+  86          
+  87          
+  88          
+  89          
+  90          
+  91          
+  92          
+  93          
+  94          
+  95          
+  96          
+  97          
+  98          
+  99          
+ 100          
+ 101          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    239    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =     24    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
